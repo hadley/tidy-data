@@ -1,0 +1,41 @@
+Review of “Tidy Data” by Hadley Wickham
+
+I think this is a useful and interesting paper, which, considering the widespread use of the author’s ddply and ggplot R functions (and the many questions about them on the R newsgroup), should be of interest to a large number of readers.
+
+The author is obviously intimately familiar with the tools he’s using in this paper, and he should remember that the readers of this paper are not nearly as familiar with them as he is.
+
+Section 2
+
+“When using tables for communication, this so-called “Alabama first” (Wainer 2000) ordering should be abandoned, and replaced with an ordering based on a meaningful variable.”
+
+There doesn’t seem to be any justification or explanation for this statement.
+
+Section 3.1
+
+Since most readers of this paper will want to apply these ideas using R, I think it would be a good idea to show how an R datasets containing the Pew and Billboard data would look, as well as the R code that would be used to melt the datasets. This is especially true for the Billboard data, because additional cleaning was performed. Similar comments apply to the other datasets in the paper.
+
+Section 3.5
+
+I feel the examples in this section need to be explained in more detail. The referenced external links contain a large number of files, and it’s not really clear which files are relevant to the discussion in this section.
+
+Section 4.1
+
+“Compare this to the difficulty of combining datasets stored in arrays; these typically require painstaking alignment before matrix operations can be used, and errors can be very hard to detect.”
+
+Would anyone seriously suggest using matrices to store data which would be combined with other data sets? The use of an index to combine multiple datasets doesn’t really seem to be related to tidy data.
+
+Section 4.3
+
+I think readers of this paper might find examples from stata more relevant than those from spss. 
+
+Section 5
+
+I was not able to download the data for the case study from https://raw.github.com/hadley/tidy-data/master/case-study/deaths.rdata; I recieved a 403 Forbidden error.
+
+I think there should be a more thorough discussion explaining the goal of analyzing this data set. I’m not familiar with the term ”time course”, and the single sentence
+
+“The case study uses individual-level mortality data from Mexico, with the goal of finding causes of death that have notably different time patterns within a day.”
+
+really didn’t clarify the goal sufficiently for me. Perhaps an example of an unusual time course would help to clarify things.
+
+

@@ -1,0 +1,12 @@
+JSS 1090: Tidy Data
+
+Hadley is well-known and well-regarded in the field and
+at JSS.  I was fortunate to find three very different
+reviewers and, of course, looked through the paper myself.
+I do not provide my own review.
+
+This paper has obvious potential.  I think the reviewers
+have many good comments (though of course Hadley may disagree
+with some of them and act accordingly) that will improve the
+paper.  I'm simply going to assume that Hadley will revise
+and resubmit.
