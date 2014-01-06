@@ -5,7 +5,7 @@ source("xtable.r")
 options(stringsAsFactors = FALSE)
 
 # Load -----------------------------------------------------------------------
-raw <- read.csv("tb.csv")
+raw <- read.csv("tb.csv", na.strings = "")
 raw$new_sp <- NULL
 raw <- subset(raw, year == 2000)
 names(raw)[1] <- "country"
