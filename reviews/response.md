@@ -1,3 +1,9 @@
+I really appreciate the thoughtful comments of all the reviewers. I've worked
+hard to make the paper easier to understand and the reviewer's comments were
+extremely useful.  A point-by-point summary of the comments and my rebuttal
+is below. Minor comments fixed without needing further discussion are listed
+at the end.
+
 # Reviewer 1
 
 > Details of writing: There is opportunity for improvement and for 
@@ -10,52 +16,29 @@
 > comprehensive, I will illustrate the kinds of small changes (including 
 > just fixing typos) which taken together would have a positive effect. (R1)
 
-> Abstract: "take in and take out" "input and output"
-> p. 1 up 6: "subset" -> "component"
-
 > p. 1 last full sentence: "The reorganization makes...because it conforms to 
-> a standard that facilitates well an initial exploration and analysis of the data; you don't..."
+> a standard that facilitates well an initial exploration and analysis of the 
+> data; you don't..."
+
+I'm not quite sure what the reviewer meant here, but I've rewritten the 
+paragraph for clarity.
 
 > p. 2 line 2: Is "reformulating" an approximation for "munging"?
-￼
-> p. 2 line 9: -> "an extension..."
 
-> p. 2, 5 up from subtitle: "...techniques with real examples." -- could do 
-> nicely.
-
-> p. 2, 1 up from subtitle "...misses and what other approaches might be 
-> fruitful to pursue."
-
-> p. 3 2/3 down "...were were..."
+Yes, but I think mungling better conveys the inelegance of this operation :)
 
 > p. 3 bottom. Consider having a new bold subtitle as a guidepost for the 
 > reader: Defining tidy data:
 
-> p. 10, up 2. Sentence is garbled.
-
-> p. 11 bottom: (left) and (right) may not be the apt descriptors... 
-
-> p. 12, line 9: comma after file name?
-
-> p. 12: This reviewer would prefer to avoid "hopefully" about 13 lines down. 
-> More substantively, the sentence is garbled.
-
-> p. 13 middle "...by the by preposition." Should second "by' be bolded? Or in 
-> quotes" Same question arises again.
+I've completely reorganised this section and it should be much more clear.
 
 > p. 14 last paragraph. A difficulty is identified; does the author suggest 
 > a solution? Reader isn't clear where we are left as we enter the Case Study.
 
-> p. 17 middle -> " diseases we work with have..." 
-
-> p. 18 nice plots in an interesting context!
-
-> p. 19 last line "...seem like they should ..." -> "may" 
-
-> p. 20 very effective use of exploratory data analysis
-
 > p. 21 down 13: might be clearer if "...an efficient equivalent to join." 
 > – bolding or perhaps quotes.
+
+I've removed those comments because I know no longer think that they a true.
 
 > This reviewer notes (in a spirit of collegiality) that the best writers about 
 > data analysis (from a previous generation) – Fred Mosteller, John Tukey,
@@ -63,6 +46,7 @@
 > used data as plural form (and occasionally datum as singular). From that 
 > perspective, "the data is ..." grates more than a little ... but 
 > regrettably this is a battle that is now lost. Sigh... :) :)
+
 
 # Reviewer 2
 
@@ -174,3 +158,37 @@
 > different time patterns within a day." really didn't clarify the goal 
 > sufficiently for me. Perhaps an example of an unusual time course would help 
 > to clarify things. (R3)
+
+# Minor problems
+
+> Abstract: "take in and take out" "input and output"
+
+> p. 1 up 6: "subset" -> "component"
+
+> p. 2 line 9: -> "an extension..."
+
+> p. 2, 5 up from subtitle: "...techniques with real examples." -- could do 
+> nicely.
+
+> p. 2, 1 up from subtitle "...misses and what other approaches might be 
+> fruitful to pursue."
+
+> p. 3 2/3 down "...were were..."
+
+> p. 10, up 2. Sentence is garbled.
+
+> p. 11 bottom: (left) and (right) may not be the apt descriptors... 
+
+> p. 12, line 9: comma after file name?
+
+> p. 12: This reviewer would prefer to avoid "hopefully" about 13 lines down. 
+> More substantively, the sentence is garbled.
+
+
+> p. 13 middle "...by the by preposition." Should second "by' be bolded? Or in 
+> quotes" Same question arises again.
+
+> p. 17 middle -> " diseases we work with have..." 
+
+> p. 19 last line "...seem like they should ..." -> "may" 
+

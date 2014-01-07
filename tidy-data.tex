@@ -1,4 +1,5 @@
 \documentclass[article]{jss}
+\usepackage[utf8]{inputenc}
 
 % jss.cls ----------------------------------------------------------------------
 
@@ -11,7 +12,7 @@
 
 %% an abstract and keywords
 \Abstract{
-A huge amount of effort is spent cleaning data to get it ready for data analysis, but there has been little research on how to make data cleaning as easy and effective as possible. This paper tackles a small, but important, subset of data cleaning: data ``tidying''. Tidy datasets are easy to manipulate, model and visualise, and have a specific structure: variables are stored in columns, observations in rows, and a single type of experimental unit per dataset. This framework makes it easy to tidy messy datasets because only a small set of tools are needed to deal with a wide range of un-tidy datasets. This structure also makes it easier to develop tidy tools for data analysis, tools that both take in and put out tidy datasets. The advantages of a consistent data structure and matching tools are demonstrated with a case study free from mundane data manipulation chores.
+A huge amount of effort is spent cleaning data to get it ready for data analysis, but there has been little research on how to make data cleaning as easy and effective as possible. This paper tackles a small, but important, component of data cleaning: data ``tidying''. Tidy datasets are easy to manipulate, model and visualise, and have a specific structure: variables are stored in columns, observations in rows, and a single type of experimental unit per dataset. This framework makes it easy to tidy messy datasets because only a small set of tools are needed to deal with a wide range of un-tidy datasets. This structure also makes it easier to develop tidy tools for data analysis, tools that both input and output tidy datasets. The advantages of a consistent data structure and matching tools are demonstrated with a case study free from mundane data manipulation chores.
 }
 \Keywords{data cleaning, data tidying, relational databases, \proglang{R}}
 \Plainkeywords{data cleaning, data tidying, relational databases, R}
@@ -48,49 +49,61 @@ A huge amount of effort is spent cleaning data to get it ready for data analysis
 
 It's often said that 80\% of the effort in a data analysis is spent on data cleaning \citep{dasu:2003}, the process of getting the data ready to analyse. Data cleaning is not only a vital first step, but it is often repeated multiple times over the course of an analysis as new problems come to light. Despite the amount of time it takes, there has been little research on how to clean data well. Part of the challenge is the breadth of activities that cleaning encompasses, from outlier checking, to date parsing, to missing value imputation. To get a handle on the problem, this paper focusses on a small, but important, subset of data cleaning that I call data ``tidying'': structuring data values to make the process of data analysis as easy as possible.
 
-The principles of tidy data provide a standard way of organising the data values within a dataset. This makes initial data cleaning easier because you have a \emph{standard} that you can start with: you don't need to reinvent the wheel for each new dataset. It also makes it easier to develop data analysis tools that work together seamlessly. Current tools are often inconsistent, so you need to spend time munging the output from one tool into the input for another. Tidy datasets and tidy tools work hand in hand to make data analysis easier, allowing you to focus on the interesting domain problem, not the uninteresting details of data structure.  
+The principles of tidy data provide a standard way of organising the data values within a dataset. A standard makes initial data cleaning easier because you don't need to start from scratch each time and you can avoid reinventing the wheel. The tidy data standard has been designed to facilitate initial exploration and analysis of the data, and it makes it easier to develop data analysis tools that work together seamlessly. Current tools are often inconsistent, so you need to spend time munging the output from one tool into the input for another. Tidy datasets and tidy tools work hand in hand to make data analysis easier, allowing you to focus on the interesting domain problem, not the uninteresting logistics of your data.
 
-The principles of tidy data are closely tied to relational databases and Codd's relational algebra \citep{codd:1990}, but are framed in a language more familiar to statisticians. Computer scientists have also contributed much to the study of data cleaning. For example, \citet{lakshmanan:1996} defines a extension to SQL allowing it to operate on messy datasets, \citet{raman:2001} provides a framework for cleaning datasets, and \citet{kandel:2011} develops an interactive tool that makes data cleaning easy, automatically creating the code to clean datasets with a friendly user interface. These tools are useful, but are presented in language foreign to most statisticians, fail to give much advice on how datasets should be structured, and lack connections to the tools of data analysis.
+The principles of tidy data are closely tied to relational databases and Codd's relational algebra \citep{codd:1990}, but are framed in a language more familiar to statisticians. Computer scientists have also contributed much to the study of data cleaning. For example, \citet{lakshmanan:1996} defines an extension to SQL allowing it to operate on messy datasets, \citet{raman:2001} provides a framework for cleaning datasets, and \citet{kandel:2011} develops an interactive tool that makes data cleaning easy, automatically creating the code to clean datasets with a friendly user interface. These tools are useful, but they are presented in a language foreign to most statisticians, they fail to give much advice on how datasets should be structured, and they lack connections to the tools of data analysis.
 
 The development of tidy data has been driven by my struggles working with real-world datasets, which are often organised in bizarre ways. I have spent countless hours struggling to get these datasets organised in a way that makes data analysis possible, let alone easy. I have also struggled to impart these skills to my students, so they can tackle problems in the real-world, where there are few constraints on how datasets are organised. In the course of these struggles I developed the \pkg{reshape} and \pkg{reshape2} \citep{wickham:2007b} \proglang{R} packages, but while I could intuitively use the tools, I lacked the framework to make my understanding explicit. This paper provides that framework, and provides a consistent ``philosophy of data'' that underlies my work in the \pkg{plyr} \citep{me:plyr} and \pkg{ggplot2} \citep{me:ggplot2} packages.
 
-The paper proceeds as follows. Section~\ref{sec:defining} begins by defining the three characteristics that make a dataset tidy. Most real world datasets are not tidy, so Section~\ref{sec:tidying} describes the operations needed to make messy datasets tidy, and illustrates the techniques with a range of real-life examples. Section~\ref{sec:tidy-tools} defines tidy tools, tools that input and output tidy datasets, and discusses how together tidy data and tidy tools make it easier to do a data analysis. These principles are illustrated with a small case study in Section~\ref{sec:case-study}. Section~\ref{sec:discussion} concludes with a discussion of what this framework misses and other approaches that might be fruitful to pursue.
+The paper proceeds as follows. Section~\ref{sec:defining} begins by defining the three characteristics that make a dataset tidy. Most real world datasets are not tidy, so Section~\ref{sec:tidying} describes the operations needed to make messy datasets tidy, and illustrates the techniques with a range of real examples. Section~\ref{sec:tidy-tools} defines tidy tools, tools that input and output tidy datasets, and discusses how together tidy data and tidy tools make it easier to do a data analysis. These principles are illustrated with a small case study in Section~\ref{sec:case-study}. Section~\ref{sec:discussion} concludes with a discussion of what this framework misses and what other approaches might be fruitful to pursue.
 
 \section{Defining tidy data}
 \label{sec:defining}
 
 \epigraph{Happy families are all alike; every unhappy family is unhappy in its own way}{Leo Tolstoy}
 
-Like families, tidy datasets are all alike, but every messy dataset is messy in its own way. Here we will define the essence of tidy data, and provide important vocabulary for describing datasets.
+Like families, tidy datasets are all alike, but every messy dataset is messy in its own way. Tidy datasets provide a standard way to connect the structure of a dataset to its semantics. I'll provide some standard vocabulary for describing the structure of a dataset, it's semantics, and then use those definitions to define tidy data.
 
-Statistical datasets usually come in the form of a rectangular table, made up of rows and columns. Tables are usually labelled with column names, and sometimes with row names. The table is a collection of data values, typically either numeric (if quantitative) or character (if qualitative). Values are grouped into variables, measurements of a single quantifiable property. Multiple measurements made on the same observational unit form an observation.
+\subsection{Data structure}
 
-There is a little circularity in the definition, which is resolved by defining an observational unit as the smallest constituent atom of the experimental unit. For example, in a longitudinal medical study, the experimental unit might be the patient, but the observational unit is the patient at each time point. In an agricultural experiment, the experimental units might be the cages given different diets, but the observational units are the pigs whose individual weights are measured. This definition of observational unit leads to variables which are physical properties, like blood pressure and weight, not conditional properties like blood pressure at time 1, or weight of pig 2. Structure in the variable names (`trtA', `trtB', `trtC'; `jan1', `feb1', `mar1') is difficult to exploit, and suggests that the names are values of other variables. 
-
-% Experimental units are usually independent, and the statistical challenge in an analysis is capturing the dependence of observational units within an experimental unit. Failing to do so correctly leads to problems like pseudoreplication \citep{hurlbert:1984}.
-
-Table~\ref{tbl:preg-raw} illustrates a data format commonly seen in the wild. Here it is used to store information about an imaginary experiment with two treatments. There are two columns and three rows (plus column and row names), defining three variables (name, treatment, result) and either five or six observations, depending on how you think about the missing value.
+Most statistical datasets are rectangular tables made up of rows and columns. The columns almost always labelled, and rows are often labelled. Table~\ref{tbl:preg-raw} provides some data about an imaginary experiment in a format commonly seen in the wild. The table has two columns and three rows, and both rows and columns are labelled.
 
 \begin{table}[htbp]
   \centering
-  \begin{tabular}{lrr}
-  \toprule
-               & treatmentA & treatmentB \\
-  \midrule
-  John Smith   &      ---  &            5 \\
-  Jane Doe     &        1  &            4 \\
-  Mary Johnson &        2  &            3 \\
-  \bottomrule
-  \end{tabular}
+  \input{data/preg-raw-1.tex}
   \caption{Typical presentation dataset.}
-  \label{tbl:preg-raw}
+  \label{tbl:preg-raw-1}
 \end{table}
 
-It's not always obvious what qualifies as a variable, and a variable in one analysis may be a value in another. For example, if the columns in the example were were height and weight we would have been happy to call them variables. If the columns were height and width, it would be less clear cut, as we might think of height and weight as values of a dimension variable. If the columns were home phone and work phone, we could treat these as two variables, but in a fraud detection environment we might want variables phone number and number type because the use of one phone number for multiple people might suggest fraud. A general rule of thumb is that it is easier to describe functional relationships between variables/columns (e.g., z is a linear combination of x and y, density is the ratio of weight to volume) than between rows, and it is easier to make comparisons between groups of rows/observations (e.g., average of group a vs.\ average of group b) than between columns. If you find yourself fighting these constraints, you may not have correctly identified the appropriate variables for your problem.
+There are many ways to structure the same underlying data. Figure~\ref{tbl:preg-raw-2} shows exactly the same data, but the rows and columns have been transposed. Describing the structure of a dataset is not enough, we also need some way to describe it's underlying semantics.
 
-In a given analysis, there may also be multiple types of observational unit. For example, in a trial of new allergy medication we might have three observational types: demographic data collected on \emph{each person} (age, sex, race), on \emph{each person on each day} of hay fever season (number of sneezes, redness of eyes), and on \emph{each day} (temperature, pollen count).
+\begin{table}[htbp]
+  \centering
+  \input{data/preg-raw-2.tex}
+  \caption{The same data as in Table~\ref{tbl:preg-raw-1} but structured differently.}
+  \label{tbl:preg-raw-2}
+\end{table}
 
-A dataset is messy or tidy depending on how rows, columns and tables are matched up with observations, variables and types. In tidy data:
+\subsection{Data semantics}
+
+A table is a collection of data \textbf{values}, typically either numbers (if quantitative) or strings (if qualitative). Values are grouped into \textbf{variables}, measurements of a single quantifiable property. Multiple measurements made on the same observational unit form an \textbf{observation}. An observational unit as the smallest constituent atom of the experimental unit. For example, in a longitudinal medical study, the experimental unit might be the patient, but the observational unit is the patient at each time point. In an agricultural experiment, the experimental units might be the cages given different diets, but the observational units are the pigs whose individual weights are measured. This definition of observational unit leads to variables which are physical properties, like blood pressure and weight, not conditional properties like blood pressure at time 1, or weight of pig 2.
+
+The dataset in Tables~\ref{tbl:preg-raw-1} and \ref{tbl:preg-raw-2} has three variables (name, treatment, result), six observations (two for each person), and either five or six values, depending on how you think about the missing value.  We can make this structure more obvious by putting the variables in the columns and the observations in the rows, as in Figure~\ref{tbl:preg-tidy}.
+
+\begin{table}[htbp]
+  \centering
+  \input{data/preg-tidy.tex}
+  \caption{Tidied data.}
+  \label{tbl:preg-tidy}
+\end{table}
+
+For a given dataset, it's usually easy to figure out what are observations and what are variables, but precisely defining variables and observations in general is surprisingly difficult. For example, if the columns in the Table~\ref{fig:preg-raw-1} were height and weight we would have been happy to call them variables. If the columns were height and width, it would be less clear cut, as we might think of height and weight as values of a dimension variable. If the columns were home phone and work phone, we could treat these as two variables, but in a fraud detection environment we might want variables phone number and number type because the use of one phone number for multiple people might suggest fraud. A general rule of thumb is that it is easier to describe functional relationships between variables/columns (e.g., z is a linear combination of x and y, density is the ratio of weight to volume) than between rows, and it is easier to make comparisons between groups of rows/observations (e.g., average of group a vs.\ average of group b) than between columns.
+
+Note that in a given analysis, there may be multiple types of observational unit. For example, in a trial of new allergy medication we might have three observational types: demographic data collected on \emph{each person} (age, sex, race), on \emph{each person on each day} of hay fever season (number of sneezes, redness of eyes), and on \emph{each day} (temperature, pollen count).
+
+\subsection{Tidy data}
+
+Tidy data is a standard way of mapping the semantics of a dataset to its structure. A dataset is \emph{messy} or \emph{tidy} depending on how rows, columns and tables are matched up with observations, variables and types. In tidy data:
 
 \begin{enumerate}
   \item Each variable forms a column,
@@ -100,25 +113,7 @@ A dataset is messy or tidy depending on how rows, columns and tables are matched
 
 \noindent This is Codd's 3rd normal form \citep{codd:1990}, but with the constraints framed in statistical language, and the focus on a single dataset, not the many connected datasets common in relational databases. I will call other arrangements of data messy. 
 
-Table~\ref{tbl:preg-tidy} shows the tidy version of Table~\ref{tbl:preg-raw}. Now each row represents an observation, the result of one treatment on one person, and each column is a variable. We could also choose to drop the row representing the result of John Smith's treatment a, but we don't, because missing values should only be omitted if they are structural: impossible because of the design of the experiment.
-
-\begin{table}[htbp]
-  \centering
-  \begin{tabular}{lrr}
-    \toprule
-    name &    treatment    & result  \\
-    \midrule
-    Jane Doe      & a & 1 \\
-    Jane Doe      & b & 4 \\
-    John Smith    & a & --- \\
-    John Smith    & b & 5 \\
-    Mary Johnson  & a & 2 \\
-    Mary Johnson  & b & 3 \\
-    \bottomrule
-  \end{tabular}
-  \caption{Tidied data.}
-  \label{tbl:preg-tidy}
-\end{table}
+Table~\ref{tbl:preg-tidy} is the tidy version of Table~\ref{tbl:preg-raw} because each row represents an observation, the result of one treatment on one person, and each column is a variable. We could also choose to drop the row containing the missing value, because missing values should only be omitted if they are structural: impossible because of the design of the experiment.
 
 While order of variables and observations does not affect analysis, a good ordering makes it easier to scan the raw values. One way of organising variables is by their role in the analysis: are values fixed by the design of the data collection, or are they measured during the course of the experiment? Fixed variables describe the experimental design and are known in advance. These are often called dimensions by computer scientists, and typically denoted by subscripts on random variables. Measured variables are what we actually measure in the study. Fixed variables should come first, followed by measured variables, each ordered so that related variables are contiguous. Rows can then be ordered by the first variable, breaking ties with the second and subsequent variables. This is the convention adopted by all tabular displays in this paper. When using tables for communication, this so-called ``Alabama first'' \citep{wainer:2000} ordering should be abandoned, and replaced with an ordering based on a meaningful variable.
 
@@ -239,7 +234,7 @@ This dataset is mostly tidy, but we have two variables stored in rows: \code{tmi
   \subfloat[Tidy data]%
     {\label{tbl:weather-tidy}\input{data/weather-clean-2.tex}}%
 
-  \caption{(a) Molten weather dataset.  This is almost tidy, but the \code{element} column contains names of variables, not values. Missing values are dropped to conserve space. (b) Tidy weather dataset. Each row representation the meteorological measurements for a single day.  There are two measured variables, minimum (\code{tmin}) and maximum (\code{tmax}) temperature; all other variables are fixed.}
+  \caption{(a) Molten weather dataset.  This is almost tidy, but the \code{element} column contains names of variables, not values. Missing values are dropped to conserve space. (b) Tidy weather dataset. Each row represents the meteorological measurements for a single day.  There are two measured variables, minimum (\code{tmin}) and maximum (\code{tmax}) temperature; all other variables are fixed.}
   \label{tbl:weather-clean}
 \end{table}
 
@@ -254,7 +249,7 @@ The billboard dataset described in Table~\ref{tbl:billboard-clean} actually cont
 
 \begin{table}
   \centering
-  \input{data/billboard-song.tex}\hspace{2em}%
+  \input{data/billboard-song.tex}\hspace{1em}%
   \input{data/billboard-rank.tex}
 
   \caption{Normalised billboard dataset split up into song dataset (left) and rank dataset (right). First 15 rows of each dataset shown; \code{genre} omitted from song dataset, \code{week} omitted from rank dataset.}
@@ -267,9 +262,19 @@ Normalisation is useful for tidying and eliminating inconsistencies, but there a
 
 \subsection{One type in multiple tables}
 
-It's also common to find data values about a single type of observational unit spread out over multiple tables, or multiple files. These tables are often split up by another variable, so each file represents a single year, person, or location. As long as the format for individual records is consistent, this is an easy problem to fix: read in all files, add a new column that records the original file name (because the filename is often the value of an important variable), then combine all tables into a single table. Once you have a single table, you can perform additional tidying as needed. An example of this type of cleaning can be found at \url{https://github.com/hadley/data-baby-names} which takes 129 yearly baby name tables provided by the US Social Security Administration and combines them into a single file.
+It's also common to find data values about a single type of observational unit spread out over multiple tables, or multiple files. These tables are often split up by another variable, so each file represents a single year, person, or location. As long as the format for individual records is consistent, this is an easy problem to fix: 
 
-A more complicated situation occurs when the dataset structure has changed over time: different variables, variable names, data storage formats, or different conventions for missing values. This may require each file to tidied individually (or hopefully in small groups) and then combined together. An example of this type of tidying is illustrated in \url{https://github.com/hadley/data-fuel-economy}, which shows the tidying of {\sc epa} fuel economy data for over 50,000 cars from 1978 to 2008. The raw data is available online, but each year is stored in a separate file and there are four major formats with many minor variations, making tidying this dataset a considerable challenge.
+\begin{enumerate}
+  \item read the files into a list of tables,
+
+\item for each table, add a new column that records the original file name (because the file name is often the value of an important variable), then
+
+  \item combine all tables into a single table. 
+\end{enumerate}
+
+Once you have a single table, you can perform additional tidying as needed. An example of this type of cleaning can be found at \url{https://github.com/hadley/data-baby-names} which takes 129 yearly baby name tables provided by the US Social Security Administration and combines them into a single file.
+
+A more complicated situation occurs when the dataset structure has changed over time. For example, the datasets contain different variables, the same variables have different names, different file formats are used, or there are different conventions for missing values. This may require each file to tidied individually (or, if you're lucky, in small groups) and then combined once tidied. An example of this type of tidying is illustrated in \url{https://github.com/hadley/data-fuel-economy}, which shows the tidying of {\sc epa} fuel economy data for over 50,000 cars from 1978 to 2008. The raw data is available online, but each year is stored in a separate file and there are four major formats with many minor variations, making tidying this dataset a considerable challenge.
 
 \section{Tidy tools}
 \label{sec:tidy-tools}
@@ -305,7 +310,7 @@ All these operations are made easier when there is a consistent way to refer to 
 
 In \proglang{R}, filtering and transforming are performed by the base \proglang{R} functions \code{subset} and \code{transform}. These are input and output-tidy. The \code{aggregate} function performs group-wise aggregation, is input-tidy, and is output-tidy providing a single aggregation method is used. The \pkg{plyr} package provides a tidy \code{summarise} and \code{arrange} function for aggregation and sorting.
 
-The four verbs can be, and often are, modified by the by preposition. We often need group-wise aggregates, transformations or subsets: pick the biggest in each group, average over replicates and so on. Combining each of the four verbs with a by operator allows them to operate on subsets of a data frame at a time. Many \proglang{SAS} {\sc proc}s possess a {\sc by} statement which allows the operation to be performed by group, and are generally input-tidy. Base \proglang{R} possesses a \code{by} function, which is input-tidy, but not output-tidy, because it produces a list. The \code{ddply} function from the \pkg{plyr} package is a tidy alternative.
+The four verbs can be, and often are, modified by the ``by'' preposition. We often need group-wise aggregates, transformations or subsets: pick the biggest in each group, average over replicates and so on. Combining each of the four verbs with a by operator allows them to operate on subsets of a data frame at a time. Many \proglang{SAS} {\sc proc}s possess a {\sc by} statement which allows the operation to be performed by group, and are generally input-tidy. Base \proglang{R} possesses a \code{by} function, which is input-tidy, but not output-tidy, because it produces a list. The \code{ddply} function from the \pkg{plyr} package is a tidy alternative.
 
 % Some aggregations occur so frequently they deserve their own optimised implementations. One such operation is (weighted) counting. Base R provides the {\tt table} function for this, but it is not output-tidy: it returns a multidimensional array. An tidy alternative is the {\tt count} function from {\tt plyr}, which returns a tidy dataset with a column for each of the input variables plus a new variable {\tt freq}, which records the number of records in each category.
 
@@ -435,7 +440,7 @@ hod2 <- join(hod2, overall, by = "hod")
   \label{tbl:counts}
 \end{table}
 
-Next we compute a distance between the time course of each cause of death and the overall time course. Here we use a simple mean squared deviation.  We also record the sample size, the total number of deaths from that cause. To ensure that the disease we work with have a decent amount of underlying data we'll only 
+Next we compute a distance between the time course of each cause of death and the overall time course. Here we use a simple mean squared deviation.  We also record the sample size, the total number of deaths from that cause. To ensure that the diseases we work with have a decent amount of underlying data we'll only 
 work with diseases with more than 50 deaths in total ($\sim$2/hour).
 
 \begin{Verbatim}
@@ -511,11 +516,11 @@ Data cleaning is an important problem, but it is an uncommon subject of study in
 
 There is a chicken-and-egg problem with tidy data: if tidy data is only as useful as the tools that work with it, then tidy tools are inextricably linked to tidy data. This makes it is easy to get stuck in a local maxima where independently changing data structures or data tools does not result in an improved workflow. Breaking out of this local maxima is hard, and requires long-term concerted effort with many false starts. While I hope that this framework for tidy data is not a false start, equally, I don't see it as the final solution and I hope others will build on this framework to develop even better ways of storing data and better tools for working with it.
 
-I have found few principles to guide the design of tidy data, which must acknowledge both statistical and cognitive factors. To date, my work has been driven by my experience doing data analysis, connections to relational database design, and introspection on the tools of data analysis. The human factors, user-centred design, and human-computer interaction communities seem like they should be able to add to this conversation, but the design of data and tools to work with it has not been an active research topic. In the future, I hope to apply methodologies from these fields (user-testing, ethnography, talk-aloud protocols) to my work to build a better understanding of the cognitive side of data analysis, and how we can best design tools to support the process.
+I have found few principles to guide the design of tidy data, which must acknowledge both statistical and cognitive factors. To date, my work has been driven by my experience doing data analysis, connections to relational database design, and introspection on the tools of data analysis. The human factors, user-centred design, and human-computer interaction communities may be able to add to this conversation, but the design of data and tools to work with it has not been an active research topic. In the future, I hope to apply methodologies from these fields (user-testing, ethnography, talk-aloud protocols) to my work to build a better understanding of the cognitive side of data analysis, and how we can best design tools to support the process.
 
 % My definition of tidy data is not exhaustive, and it focusses on the type of data that statisticians most commonly encounter: rectangular data defined by rows and columns. It is not a good fit for data on networks, or entire texts. Additionally, because the focus of this definition is on explicit definition of the data, it may not be suitable for very large datasets, such as microarray or fMRI, which may require special infrastructure for performance.
 
-Other formulations of tidy data are possible. For example, it would be possible to construct a set of tools for dealing with values stored in multidimensional arrays. This is a common data storage format for large biomedical datasets such as microarray or fMRI data. It is also necessary for many multivariate methods whose underlying theory is based on matrix manipulation. This array-tidy format would be compact and efficient, because there are many efficient tools for working with high-dimensional arrays, even when sparse, and the format would connect more closely with the mathematical basis of statistics. This approach is taken by the Pandas python data analysis library \citep{mckinney:2010}. The biggest challenge is to connect different datasets, requiring the development of an efficient equivalent to join, and to connect to existing modelling tools without an expensive re-expression in another format. Even more interestingly, we could consider tidy tools that can ignore the underlying data representation, automatically choosing between array-tidy and dataframe-tidy formats to optimise memory usage and performance.
+Other formulations of tidy data are possible. For example, it would be possible to construct a set of tools for dealing with values stored in multidimensional arrays. This is a common data storage format for large biomedical datasets such as microarray or fMRI data. It is also necessary for many multivariate methods whose underlying theory is based on matrix manipulation. This array-tidy format would be compact and efficient, because there are many efficient tools for working with high-dimensional arrays, even when sparse, and the format would connect more closely with the mathematical basis of statistics. This approach is taken by the Pandas python data analysis library \citep{mckinney:2010}. Even more interestingly, we could consider tidy tools that can ignore the underlying data representation, automatically choosing between array-tidy and dataframe-tidy formats to optimise memory usage and performance.
 
 Apart from tidying, there are many other tasks involved in cleaning data: parsing dates and numbers, identifying missing values, correcting character encodings (for international data), matching similar but not identical values (created by typos), verifying experimental design, filling in structural missing values, not to mention model-based data cleaning that identifies suspicious values. Can we develop other frameworks to make these tasks easier?
 
