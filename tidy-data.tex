@@ -62,11 +62,11 @@ The paper proceeds as follows. Section~\ref{sec:defining} begins by defining the
 
 \epigraph{Happy families are all alike; every unhappy family is unhappy in its own way}{Leo Tolstoy}
 
-Like families, tidy datasets are all alike, but every messy dataset is messy in its own way. Tidy datasets provide a standard way to connect the structure of a dataset to its semantics. I'll provide some standard vocabulary for describing the structure of a dataset, it's semantics, and then use those definitions to define tidy data.
+Like families, tidy datasets are all alike, but every messy dataset is messy in its own way. Tidy datasets provide a standard way to connect the structure of a dataset (its physical layout) to its semantics (its meaning). I'll provide some standard vocabulary for describing the structure of a dataset, its semantics, and then use those definitions to define tidy data.
 
 \subsection{Data structure}
 
-Most statistical datasets are rectangular tables made up of rows and columns. The columns almost always labelled, and rows are often labelled. Table~\ref{tbl:preg-raw} provides some data about an imaginary experiment in a format commonly seen in the wild. The table has two columns and three rows, and both rows and columns are labelled.
+Most statistical datasets are rectangular tables made up of \textbf{columns} and \textbf{rows}. The columns are almost always labelled, and rows are often labelled. Table~\ref{tbl:preg-raw-1} provides some data about an imaginary experiment in a format commonly seen in the wild. The table has two columns and three rows, and both rows and columns are labelled.
 
 \begin{table}[htbp]
   \centering
@@ -75,7 +75,7 @@ Most statistical datasets are rectangular tables made up of rows and columns. Th
   \label{tbl:preg-raw-1}
 \end{table}
 
-There are many ways to structure the same underlying data. Figure~\ref{tbl:preg-raw-2} shows exactly the same data, but the rows and columns have been transposed. Describing the structure of a dataset is not enough, we also need some way to describe it's underlying semantics.
+There are many ways to structure the same underlying data. Table~\ref{tbl:preg-raw-2} shows the same data as Table~\ref{tbl:preg-raw-1}, but the rows and columns have been transposed. The data is the same, but the layout is different. Our vocabulary of rows and columns is not rich enough to say why these two tables represent the same data. We also need a way to describe the meaning of the underlying data displayed in the table. It's not enough to describe the appearance of a dataset (how the values are physically laid out), we also need a way to describe the underlying semantics, the meaning, of the values in the dataset.
 
 \begin{table}[htbp]
   \centering
@@ -86,9 +86,9 @@ There are many ways to structure the same underlying data. Figure~\ref{tbl:preg-
 
 \subsection{Data semantics}
 
-A table is a collection of data \textbf{values}, typically either numbers (if quantitative) or strings (if qualitative). Values are grouped into \textbf{variables}, measurements of a single quantifiable property. Multiple measurements made on the same observational unit form an \textbf{observation}. An observational unit as the smallest constituent atom of the experimental unit. For example, in a longitudinal medical study, the experimental unit might be the patient, but the observational unit is the patient at each time point. In an agricultural experiment, the experimental units might be the cages given different diets, but the observational units are the pigs whose individual weights are measured. This definition of observational unit leads to variables which are physical properties, like blood pressure and weight, not conditional properties like blood pressure at time 1, or weight of pig 2.
+A table is a collection of data \textbf{values}, typically either numbers (if quantitative) or strings (if qualitative). Values are grouped into \textbf{variables}, measurements of a single quantifiable property. Multiple measurements made on the same observational unit form an \textbf{observation}. An observational unit is the smallest constituent atom of the experimental unit. For example, in a longitudinal medical study, the experimental unit might be the patient, but the observational unit is the patient at each time point. In an agricultural experiment, the experimental units might be the cages given different diets, but the observational units are the pigs whose individual weights are measured. This definition of observational unit leads to variables which are physical properties, like blood pressure and weight, not conditional properties like blood pressure at time 1, or weight of pig 2.
 
-The dataset in Tables~\ref{tbl:preg-raw-1} and \ref{tbl:preg-raw-2} has three variables (name, treatment, result), six observations (two for each person), and either five or six values, depending on how you think about the missing value.  We can make this structure more obvious by putting the variables in the columns and the observations in the rows, as in Figure~\ref{tbl:preg-tidy}.
+The dataset in Tables~\ref{tbl:preg-raw-1} and \ref{tbl:preg-raw-2} has three variables (name, treatment, result) and six observations (two for each person). It has two values of the treatment variable (a and b), three values of the treatment variable, and either five or six values of the result variable, depending on how you think about the missing value.  We can make this structure more obvious by putting the variables in the columns and the observations in the rows, as in Table~\ref{tbl:preg-tidy}.
 
 \begin{table}[htbp]
   \centering
@@ -97,25 +97,27 @@ The dataset in Tables~\ref{tbl:preg-raw-1} and \ref{tbl:preg-raw-2} has three va
   \label{tbl:preg-tidy}
 \end{table}
 
-For a given dataset, it's usually easy to figure out what are observations and what are variables, but precisely defining variables and observations in general is surprisingly difficult. For example, if the columns in the Table~\ref{fig:preg-raw-1} were height and weight we would have been happy to call them variables. If the columns were height and width, it would be less clear cut, as we might think of height and weight as values of a dimension variable. If the columns were home phone and work phone, we could treat these as two variables, but in a fraud detection environment we might want variables phone number and number type because the use of one phone number for multiple people might suggest fraud. A general rule of thumb is that it is easier to describe functional relationships between variables/columns (e.g., z is a linear combination of x and y, density is the ratio of weight to volume) than between rows, and it is easier to make comparisons between groups of rows/observations (e.g., average of group a vs.\ average of group b) than between columns.
+For a given dataset, it's usually easy to figure out what are observations and what are variables, but precisely defining variables and observations in general is surprisingly difficult. For example, if the columns in the Table~\ref{tbl:preg-raw-1} were height and weight we would have been happy to call them variables. If the columns were height and width, it would be less clear cut, as we might think of height and width as values of a dimension variable. If the columns were home phone and work phone, we could treat these as two variables, but in a fraud detection environment we might want variables phone number and number type because the use of one phone number for multiple people might suggest fraud. A general rule of thumb is that it is easier to describe functional relationships between variables (e.g., z is a linear combination of x and y, density is the ratio of weight to volume) than between rows, and it is easier to make comparisons between groups of observations (e.g., average of group a vs.\ average of group b) than between columns.
 
-Note that in a given analysis, there may be multiple types of observational unit. For example, in a trial of new allergy medication we might have three observational types: demographic data collected on \emph{each person} (age, sex, race), on \emph{each person on each day} of hay fever season (number of sneezes, redness of eyes), and on \emph{each day} (temperature, pollen count).
+Note that in a given analysis, there may be multiple types of observational unit. For example, in a trial of new allergy medication we might have three observational types: demographic data collected from each person (age, sex, race), medical data collected from each person on each day (number of sneezes, redness of eyes), and meterological data collected on each day (temperature, pollen count).
 
 \subsection{Tidy data}
 
-Tidy data is a standard way of mapping the semantics of a dataset to its structure. A dataset is \emph{messy} or \emph{tidy} depending on how rows, columns and tables are matched up with observations, variables and types. In tidy data:
+Tidy data is a standard way of mapping the meaning of a dataset to its structure. A dataset is messy or tidy depending on how rows, columns and tables are matched up with observations, variables and types. In \textbf{tidy data}:
 
 \begin{enumerate}
   \item Each variable forms a column,
   \item Each observation forms a row,
-  \item Each table (or file) stores information about one observational type.
+  \item Each table stores information on one type of observational unit.
 \end{enumerate}
 
-\noindent This is Codd's 3rd normal form \citep{codd:1990}, but with the constraints framed in statistical language, and the focus on a single dataset, not the many connected datasets common in relational databases. I will call other arrangements of data messy. 
+\noindent This is Codd's 3rd normal form \citep{codd:1990}, but with the constraints framed in statistical language, and the focus on a single dataset, not the many connected datasets common in relational databases. \textbf{Messy data} is any other other arrangement of the data. 
 
-Table~\ref{tbl:preg-tidy} is the tidy version of Table~\ref{tbl:preg-raw} because each row represents an observation, the result of one treatment on one person, and each column is a variable. We could also choose to drop the row containing the missing value, because missing values should only be omitted if they are structural: impossible because of the design of the experiment.
+Table~\ref{tbl:preg-tidy} is the tidy version of Table~\ref{tbl:preg-raw-1} because each row represents an observation, the result of one treatment on one person, and each column is a variable. We could also choose to drop the row containing the missing value, because missing values should only be omitted if they are structural: impossible because of the design of the experiment.
 
-While order of variables and observations does not affect analysis, a good ordering makes it easier to scan the raw values. One way of organising variables is by their role in the analysis: are values fixed by the design of the data collection, or are they measured during the course of the experiment? Fixed variables describe the experimental design and are known in advance. These are often called dimensions by computer scientists, and typically denoted by subscripts on random variables. Measured variables are what we actually measure in the study. Fixed variables should come first, followed by measured variables, each ordered so that related variables are contiguous. Rows can then be ordered by the first variable, breaking ties with the second and subsequent variables. This is the convention adopted by all tabular displays in this paper. When using tables for communication, this so-called ``Alabama first'' \citep{wainer:2000} ordering should be abandoned, and replaced with an ordering based on a meaningful variable.
+Tidy data makes it easy for an analyst or a computer to extract needed variable because it provides a standard way of structuring a dataset. Contrast Table~\ref{tbl:preg-tidy} to Table~\ref{tbl:preg-raw-1}: in Table~\ref{tbl:preg-raw-1} you need to use different strategies for different variables. This slows analysis and invites errors. If you consider how many data analysis operations involve all of the values in a variable (every aggregating function), you can see how important it is to extract these values in a standard, simple way. Tidy data is particularly well suited for vectorised programming languages like \proglang{R}, because the layout ensures that values of different variables from the same observation are always paired.
+
+While order of variables and observations does not affect analysis, a good ordering makes it easier to scan the raw values. One way of organising variables is by their role in the analysis: are values fixed by the design of the data collection, or are they measured during the course of the experiment? Fixed variables describe the experimental design and are known in advance. Computer scientists often call fixed variables dimensions, and statisticians usually denote them with subscripts on random variables. Measured variables are what we actually measure in the study. Fixed variables should come first, followed by measured variables, each ordered so that related variables are contiguous. Rows can then be ordered by the first variable, breaking ties with the second and subsequent (fixed) variables. This is the convention adopted by all tabular displays in this paper. 
 
 \section{Tidying messy datasets}
 \label{sec:tidying}
