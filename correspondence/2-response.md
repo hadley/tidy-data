@@ -54,6 +54,9 @@ true.
 > ..." grates more than a little ... but regrettably this is a battle
 > that is now lost. Sigh... :) :)
 
+I tried changing "data is" to "data are", and found the result grating. I 
+think you're right that the battle is lost.
+
 Reviewer 2
 ==========
 
@@ -61,6 +64,11 @@ Reviewer 2
 > tone of the paper to be too conversational. The author overuses
 > contractions, ambiguous pronouns ("It's often said..."), and casually
 > addresses the reader in second-person form. (R2)
+
+I have largely kept the conversational style of the paper. I don't think it's
+necessary for a scientific paper to be too formal. This work appeals
+more to practicioners of data analysis than academic statisticians, so I think
+it is particularly important that the writing is approachable.
 
 > The author also switches between the use of italics, boldface, quotes,
 > and the LaTeX verbatim environment constantly, which tends to be
