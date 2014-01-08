@@ -86,6 +86,8 @@ variable names.
 > There doesn't seem to be any justification or explanation for this statement.
 > (R3)
 
+Removed.
+
 > Section 3.1: Since most readers of this paper will want to apply these ideas 
 > using R, I think it would be a good idea to show how an R datasets containing 
 > the Pew and Billboard data would look, as well as the R code that would be 
@@ -93,10 +95,15 @@ variable names.
 > because additional cleaning was performed. Similar comments apply to the 
 > other datasets in the paper. (R3)
 
+I think including the code in the paper would make it too long, but they
+are all available at the paper website at https://github.com/hadley/tidy-data
+
 > Section 3.5: I feel the examples in this section need to be explained in 
 > more detail. The referenced external links contain a large number of files, 
 > and it's not really clear which files are relevant to the discussion in this 
 > section. (R3)
+
+I've added a brief snippet of R code to illustrate how you might tackle this.
 
 > Section 4.1: "Compare this to the difficulty of combining datasets stored in 
 > arrays; these typically require painstaking alignment before matrix 
@@ -105,9 +112,14 @@ variable names.
 > combined with other data sets? The use of an index to combine multiple 
 > datasets doesn't really seem to be related to tidy data. (R3)
 
+Right, and I've now removed this sentence.
+
 > Section 5: I was not able to download the data for the case study from 
 > https://raw.github.com/hadley/tidy-data/master/case-study/deaths.rdata; 
 > I recieved a 403 Forbidden error. (R3)
+
+Smaller version that you can download now at 
+https://raw.github.com/hadley/tidy-data/master/case-study/deaths.rds
 
 > I think there should be a more thorough discussion explaining the goal of 
 > analyzing this data set. I'm not familiar with the term "time course", and 

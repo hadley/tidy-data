@@ -274,6 +274,14 @@ It's also common to find data values about a single type of observational unit s
   \item combine all tables into a single table. 
 \end{enumerate}
 
+The \pkg{plyr} package makes this straightforward in \proglang{R}. The following code generates a vector of file names in a directory (\code{data/}), matching a regular exrepssion (ends in \code{.csv}). Next we name each element of the vector with the name of the file. We do this because \pkg{plyr} will preserve the names in the next step, ensuring that each row in the final data frame is labelled with its source. Finally, \code{ldply()} loops over each path, reading in the csv file and combining the results into a single data frame.
+
+\begin{Verbatim}
+paths <- dir("data", pattern = "\\.csv$", full.names = TRUE)
+names(paths) <- basename(paths)
+ldply(paths, read.csv, stringsAsFactors = FALSE)
+\end{Verbatim}
+
 Once you have a single table, you can perform additional tidying as needed. An example of this type of cleaning can be found at \url{https://github.com/hadley/data-baby-names} which takes 129 yearly baby name tables provided by the US Social Security Administration and combines them into a single file.
 
 A more complicated situation occurs when the dataset structure has changed over time. For example, the datasets contain different variables, the same variables have different names, different file formats are used, or there are different conventions for missing values. This may require each file to tidied individually (or, if you're lucky, in small groups) and then combined once tidied. An example of this type of tidying is illustrated in \url{https://github.com/hadley/data-fuel-economy}, which shows the tidying of {\sc epa} fuel economy data for over 50,000 cars from 1978 to 2008. The raw data is available online, but each year is stored in a separate file and there are four major formats with many minor variations, making tidying this dataset a considerable challenge.
