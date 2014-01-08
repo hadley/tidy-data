@@ -144,9 +144,6 @@ I've removed those comments because I know no longer think that they a true.
 > combined with other data sets? The use of an index to combine multiple 
 > datasets doesn't really seem to be related to tidy data. (R3)
 
-> Section 4.3: I think readers of this paper might find examples from stata 
-> more relevant than those from spss. (R3)
-
 > Section 5: I was not able to download the data for the case study from 
 > https://raw.github.com/hadley/tidy-data/master/case-study/deaths.rdata; 
 > I recieved a 403 Forbidden error. (R3)
@@ -192,3 +189,6 @@ I've removed those comments because I know no longer think that they a true.
 
 > p. 19 last line "...seem like they should ..." -> "may" 
 
+
+> Section 4.3: I think readers of this paper might find examples from stata 
+> more relevant than those from spss. (R3)
