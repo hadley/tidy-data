@@ -114,7 +114,7 @@ Tidy data is a standard way of mapping the meaning of a dataset to its structure
 
 \noindent This is Codd's 3rd normal form \citep{codd:1990}, but with the constraints framed in statistical language, and the focus on a single dataset, not the many connected datasets common in relational databases. \textbf{Messy data} is any other other arrangement of the data. 
 
-Table~\ref{tbl:preg-tidy} is the tidy version of Table~\ref{tbl:preg-raw-1} because each row represents an observation, the \code{result} of one \code{treatment} on one \code{person}, and each column is a variable. We could also choose to drop the row containing the missing value, because missing values should only be omitted if they are structural: impossible because of the design of the experiment.
+Table~\ref{tbl:preg-tidy} is the tidy version of Table~\ref{tbl:preg-raw-1} because each row represents an observation, the \code{result} of one \code{treatment} on one \code{person}, and each column is a variable. We could also choose to drop the row containing the missing value, because missing values should only be omitted if they are structural, impossible because of the design of the experiment.
 
 Tidy data makes it easy for an analyst or a computer to extract needed variable because it provides a standard way of structuring a dataset. Contrast Table~\ref{tbl:preg-tidy} to Table~\ref{tbl:preg-raw-1}: in Table~\ref{tbl:preg-raw-1} you need to use different strategies for different variables. This slows analysis and invites errors. If you consider how many data analysis operations involve all of the values in a variable (every aggregating function), you can see how important it is to extract these values in a standard, simple way. Tidy data is particularly well suited for vectorised programming languages like \proglang{R}, because the layout ensures that values of different variables from the same observation are always paired.
 
@@ -144,7 +144,7 @@ Table~\ref{tbl:pew-raw} shows a subset of a typical dataset of this form. This d
 \begin{table}[htbp]
   \centering
   \input{data/pew-raw.tex}
-  \caption{The first ten rows of data on income and religion from the Pew Forum. Two columns have been omitted to save space: `\$100-150k' and `\$150k'} 
+  \caption{The first ten rows of data on income and religion from the Pew Forum. Two columns, \code{\$100-150k} and \code{\$150k}, have been omitted} 
   \label{tbl:pew-raw}
 \end{table}
 
@@ -160,7 +160,7 @@ This dataset has three variables, \code{religion}, \code{income} and \code{frequ
   \label{tbl:melt} 
 \end{table}
 
-The Pew dataset has one colvar, \code{religion}, and melting yields Table~\ref{tbl:pew-clean}. The \code{variable} column has been renamed to \code{income}, and the \code{value} column to \code{freq}, to better reflect their roles in this dataset. This form is tidy: each column represents a variable and each row represents an observation, in this case a demographic unit corresponding to a combination of \code{religion} and \code{income}.
+The Pew dataset has one colvar, \code{religion}, and melting yields Table~\ref{tbl:pew-clean}. The \code{variable} column has been renamed to \code{income}, and the \code{value} column to \code{freq}, to better reflect their roles in this dataset. This form is tidy because each column represents a variable and each row represents an observation, in this case a demographic unit corresponding to a combination of \code{religion} and \code{income}.
 
 \begin{table}[htbp]
   \centering
@@ -169,7 +169,7 @@ The Pew dataset has one colvar, \code{religion}, and melting yields Table~\ref{t
   \label{tbl:pew-clean}
 \end{table}
 
-Another common use of this data format is to record regularly spaced observations over time. For example, the billboard dataset shown in Table~\ref{tbl:billboard-raw} records the date a song first entered the Billboard top 100. It has variables \code{artist}, \code{track}, \code{date.entered}, \code{rank} and \code{week}. The rank in each week after it enters the top 100 is recorded in 75 columns, \code{wk1} to \code{wk75}. If a song is in the top 100 for less than 75 weeks the remaining columns are filled with missing values. This form of storage is not tidy, but is useful for data entry because it reduces duplication: otherwise each song in each week would need its own row, and song metadata like title and artist would need to be repeated. This issue will be discussed in more depth in Section~\ref{sub:multiple-types}.
+Another common use of this data format is to record regularly spaced observations over time. For example, the billboard dataset shown in Table~\ref{tbl:billboard-raw} records the date a song first entered the Billboard top 100. It has variables \code{artist}, \code{track}, \code{date.entered}, \code{rank} and \code{week}. The rank in each week after it enters the top 100 is recorded in 75 columns, \code{wk1} to \code{wk75}. If a song is in the top 100 for less than 75 weeks the remaining columns are filled with missing values. This form of storage is not tidy, but is useful for data entry because it reduces duplication; otherwise each song in each week would need its own row, and song metadata like title and artist would need to be repeated. This issue will be discussed in more depth in Section~\ref{sub:multiple-types}.
 
 \begin{table}[htbp]
   \centering
@@ -178,7 +178,7 @@ Another common use of this data format is to record regularly spaced observation
   \label{tbl:billboard-raw}
 \end{table}
 
-This dataset has colvars \code{year}, \code{artist}, \code{track}, \code{time}, and \code{date.entered}. Melting yields Table~\ref{tbl:billboard-clean}. I have also done a little cleaning as well as tidying: the \code{column} variable has been converted to a \code{week} variable by extracting the number, and I have added a \code{date} variable computed from \code{date.entered} and \code{week}.
+This dataset has colvars \code{year}, \code{artist}, \code{track}, \code{time}, and \code{date.entered}. Melting yields Table~\ref{tbl:billboard-clean}. I have also done a little cleaning as well as tidying: \code{column} has been converted to \code{week} by extracting the number, and \code{date} has been computed from \code{date.entered} and \code{week}.
 
 \begin{table}[htbp]
   \centering
@@ -194,7 +194,7 @@ After melting, it often happens that the \code{column} variable is a combination
 \begin{table}[htbp]
   \centering
   \input{data/tb-raw.tex}
-  \caption{Original TB dataset. Corresponding to each `m' column for males, there is also an `f' column for females: \code{f1524}, \code{f2534} and so on. These are not shown to conserve space. Note the mixture of 0s and missing values (---): this is due to the data collection process and the distinction is important for this dataset.}
+  \caption{Original TB dataset. Corresponding to each `m' column for males, there is also an `f' column for females, \code{f1524}, \code{f2534} and so on. These are not shown to conserve space. Note the mixture of 0s and missing values (---). This is due to the data collection process and the distinction is important for this dataset.}
   \label{tbl:tb-raw}
 \end{table}
 
@@ -212,15 +212,15 @@ Table~\subref*{tbl:tb-molten} shows the results of melting the TB dataset, and T
   \label{tbl:tb-clean}
 \end{table}
 
-Storing the values in this form resolves another problem in the original data: we want to compare rates, not counts, but to compute rates we need to know the population. In the original format, there is no easy way to add a population variable, and it has to be stored in a separate table, which makes it hard to correctly match populations to counts. In tidy form, adding variables to store population and rate is easy: they just become additional columns.
+Storing the values in this form resolves another problem in the original data. We want to compare rates, not counts, but to compute rates we need to know the population. In the original format, there is no easy way to add a population variable, and it has to be stored in a separate table, which makes it hard to correctly match populations to counts. In tidy form, adding variables to store population and rate is easy; they just become additional columns.
 
 \subsection{Variables are stored in both rows and columns}
 
-The most complicated form of messy data is when variables have been stored in both rows and columns. Table~\ref{tbl:weather-raw} shows daily weather data from the Global Historical Climatology Network for one weather station (MX17004) in Mexico for five months in 2010. It has variables in individual columns (\code{id}, \code{year}, \code{month}), spread across columns (\code{day}, d1--d31) and across rows (\code{tmin}, \code{tmax}) (minimum and maximum temperature). Months with less than 31 days have structural missing values for the last day(s) of the month. The \code{element} column is not a variable: it stores the names of variables.
+The most complicated form of messy data is when variables have been stored in both rows and columns. Table~\ref{tbl:weather-raw} shows daily weather data from the Global Historical Climatology Network for one weather station (MX17004) in Mexico for five months in 2010. It has variables in individual columns (\code{id}, \code{year}, \code{month}), spread across columns (\code{day}, d1--d31) and across rows (\code{tmin}, \code{tmax}) (minimum and maximum temperature). Months with less than 31 days have structural missing values for the last day(s) of the month. The \code{element} column is not a variable; it stores the names of variables.
 
 To tidy this dataset we first melt it with colvars \code{id}, \code{year}, \code{month} and the column that contains variable names, \code{element}, yielding Table~\subref*{tbl:weather-molten}. For presentation, we have dropped the missing values, making them implicit rather than explicit. This is permissible because we know how many days are in each month and can easily reconstruct the explicit missing values.
 
-This dataset is mostly tidy, but we have two variables stored in rows: \code{tmin} and \code{tmax}, the type of observation. Not shown in this example are other meteorological variables \code{prcp} (precipitation) and \code{snow} (snowfall). Fixing this requires the cast, or unstack, operation, which performs the inverse of melting, rotating the \code{element} variable back out into the columns to give Table~\subref*{tbl:weather-tidy}. This form is tidy: there is one variable in each column, and each row represents a day's observations. The cast operation is described in depth in \citet{wickham:2007b}.
+This dataset is mostly tidy, but we have two variables stored in rows: \code{tmin} and \code{tmax}, the type of observation. Not shown in this example are other meteorological variables \code{prcp} (precipitation) and \code{snow} (snowfall). Fixing this requires the cast, or unstack, operation, which performs the inverse of melting, rotating the \code{element} variable back out into the columns to give Table~\subref*{tbl:weather-tidy}. This form is tidy. There is one variable in each column, and each row represents a day's observations. The cast operation is described in depth in \citet{wickham:2007b}.
 
 \begin{table}[htbp]
   \centering
@@ -248,7 +248,7 @@ Datasets often involve values collected at multiple levels, on different types o
 
 %If you're not familiar with normalisation, it can be worthwhile to learn a little about it. There are many good tutorials available online - I found \url{http://phlonx.com/resources/nf3/} after a few minutes of searching. You certainly don't need to become an expert, as most statistical databases only need a small amount of normalisation, but it is extremely helpful for identifying inconsistencies in your data.
 
-The billboard dataset described in Table~\ref{tbl:billboard-clean} actually contains observations on two types of observational unit: the song, and its rank in each week. This is revealed through the duplication of facts about the song: the \code{artist} and \code{time} are repeated for every song in each week. The billboard dataset needs to be broken down into two datasets: a song dataset which stores \code{artist}, \code{song name} and \code{time}; and a ranking dataset which gives the \code{rank} of the \code{song} in each \code{week}. Table~\ref{tbl:billboard-normal} shows these two datasets. You could also imagine a week dataset which would record background information about the week, maybe the total number of songs sold or similar demographic information.
+The billboard dataset described in Table~\ref{tbl:billboard-clean} actually contains observations on two types of observational unit: the song, and its rank in each week. This is revealed through the duplication of facts about the song; \code{artist} and \code{time} are repeated for every song in each week. The billboard dataset needs to be broken down into two datasets: a song dataset which stores \code{artist}, \code{song name} and \code{time}; and a ranking dataset which gives the \code{rank} of the \code{song} in each \code{week}. Table~\ref{tbl:billboard-normal} shows these two datasets. You could also imagine a week dataset which would record background information about the week, maybe the total number of songs sold or similar demographic information.
 
 \begin{table}
   \centering
@@ -321,11 +321,11 @@ All these operations are made easier when there is a consistent way to refer to 
 
 In \proglang{R}, filtering and transforming are performed by the base \proglang{R} functions \code{subset()} and \code{transform()}. These are input and output-tidy. The \code{aggregate()} function performs group-wise aggregation, is input-tidy, and is output-tidy providing a single aggregation method is used. The \pkg{plyr} package provides tidy \code{summarise()} and \code{arrange()} functions for aggregation and sorting.
 
-The four verbs can be, and often are, modified by the ``by'' preposition. We often need group-wise aggregates, transformations or subsets: pick the biggest in each group, average over replicates and so on. Combining each of the four verbs with a by operator allows them to operate on subsets of a data frame at a time. Many \proglang{SAS} {\sc proc}s possess a {\sc by} statement which allows the operation to be performed by group, and are generally input-tidy. Base \proglang{R} possesses a \code{by()} function, which is input-tidy, but not output-tidy, because it produces a list. The \code{ddply()} function from the \pkg{plyr} package is a tidy alternative.
+The four verbs can be, and often are, modified by the ``by'' preposition. We often need group-wise aggregates, transformations and subsets, to pick the biggest in each group, oaverage over replicates and so on. Combining each of the four verbs with a by operator allows them to operate on subsets of a data frame at a time. Many \proglang{SAS} {\sc proc}s possess a {\sc by} statement which allows the operation to be performed by group, and are generally input-tidy. Base \proglang{R} possesses a \code{by()} function, which is input-tidy, but not output-tidy, because it produces a list. The \code{ddply()} function from the \pkg{plyr} package is a tidy alternative.
 
 % Some aggregations occur so frequently they deserve their own optimised implementations. One such operation is (weighted) counting. Base R provides the {\tt table} function for this, but it is not output-tidy: it returns a multidimensional array. An tidy alternative is the {\tt count} function from {\tt plyr}, which returns a tidy dataset with a column for each of the input variables plus a new variable {\tt freq}, which records the number of records in each category.
 
-Other tools are needed when we have multiple datasets. An advantage of tidy data is the ease with which it can be combined with other tidy datasets: we just need a join operator which works by matching common variables and adding new columns. This is implemented in the \code{merge()} function in base \proglang{R}, or the \code{join()} function in \pkg{plyr}. Compare this to the difficulty of combining datasets stored in arrays; these typically require painstaking alignment before matrix operations can be used, and errors can be very hard to detect.
+Other tools are needed when we have multiple datasets. An advantage of tidy data is the ease with which it can be combined with other tidy datasets. All that is needed is a join operator that works by matching common variables and adding new columns. This is implemented in the \code{merge()} function in base \proglang{R}, or the \code{join()} function in \pkg{plyr}. Compare this to the difficulty of combining datasets stored in arrays; these typically require painstaking alignment before matrix operations can be used, and errors can be very hard to detect.
 
 \subsection{Visualisation}
 
@@ -375,12 +375,12 @@ Another interesting example is the classic paired t-test, which can be computed 
   \label{label}
 \end{table}
 
-While model inputs usually require tidy inputs, model outputs, such as predictions and estimated coefficients, aren't always tidy. This makes it more difficult to combine results from multiple models. For example, in \proglang{R}, the default representation of model coefficients is not tidy because it does not have an explicit variable that records the variable name for each estimate: these are instead recorded as row names. In \proglang{R}, row names must be unique, so combining coefficients from many models (e.g., from bootstrap resamples, or subgroups) requires workarounds to avoid losing important information. This knocks you out of the flow of analysis and makes it harder to combine the results from multiple models.
+While model inputs usually require tidy inputs, model outputs, such as predictions and estimated coefficients, aren't always tidy. This makes it more difficult to combine results from multiple models. For example, in \proglang{R}, the default representation of model coefficients is not tidy because it does not have an explicit variable that records the variable name for each estimate, they are instead recorded as row names. In \proglang{R}, row names must be unique, so combining coefficients from many models (e.g., from bootstrap resamples, or subgroups) requires workarounds to avoid losing important information. This knocks you out of the flow of analysis and makes it harder to combine the results from multiple models. I'm not currently aware of any packages that resolve this problem.
 
 \section{Case study} 
 \label{sec:case-study}
 
-The following case study illustrates how tidy data and tidy tools make data analysis easier by easing the transitions between manipulation, visualisation and modelling: you will not see any code that exists solely to get the output of one function into the right format for input to another. I'll show the \proglang{R} code that performs the analysis, but even if you're not familiar with \proglang{R} or the exact idioms I use, I've tried to make it easy to understand by tightly interleaving code, results and explanation.
+The following case study illustrates how tidy data and tidy tools make data analysis easier by easing the transitions between manipulation, visualisation and modelling. You will not see any code that exists solely to get the output of one function into the right format for input to another. I'll show the \proglang{R} code that performs the analysis, but even if you're not familiar with \proglang{R} or the exact idioms I use, I've tried to make it easy to understand by tightly interleaving code, results and explanation.
 
 The case study uses individual-level mortality data from Mexico, with the goal of finding causes of death that have notably different time patterns within a day. The full dataset has information on 539,530 deaths in Mexico in 2008 and 55 variables, including the the location and time of death, the cause of death, and demographics of the deceased. Table~\ref{fig:raw} shows a small sample of the dataset, focussing on variables related to time of death (\code{year}, \code{month}, \code{day} and \code{hour}), and cause (\code{cod}).
 
@@ -496,7 +496,7 @@ last_plot() +
   \label{fig:devi-resid}
 \end{figure}
 
-We are interested in points that are high relative to other causes with the same number of deaths: these are diseases most different from the overall pattern. To find these unusual points, we fit a robust linear model and plot the residuals, as shown in Figure~\ref{fig:devi-resid}. The plot shows an empty region around a residual of 1.5, so somewhat arbitrarily we select those diseases with a residual greater than 1.5. We do that in two steps: first selecting the appropriate rows from \code{devi} (one row per disease), and then finding the matching time course information in the original summary dataset (24 rows per disease).
+We are interested in points that are high relative to other causes with the same number of deaths, these are the diseases most different from the overall pattern. To find these unusual points, we fit a robust linear model and plot the residuals, as shown in Figure~\ref{fig:devi-resid}. The plot shows an empty region around a residual of 1.5, so somewhat arbitrarily we select those diseases with a residual greater than 1.5. We do that in two steps: first selecting the appropriate rows from \code{devi} (one row per disease), and then finding the matching time course information in the original summary dataset (24 rows per disease).
 
 \begin{Verbatim}
 devi$resid <- resid(rlm(log(dist) ~ log(n), data = devi))

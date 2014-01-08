@@ -40,10 +40,13 @@ clear.
 > suggest a solution? Reader isn't clear where we are left as we enter
 > the Case Study.
 
+I'm not currently aware of any packages that resolve this problem, and
+I've added a note to that effect.
+
 > p. 21 down 13: might be clearer if "...an efficient equivalent to
 > join." – bolding or perhaps quotes.
 
-I've removed those comments because I know no longer think that they a
+I've removed those comments because I know no longer think that they are
 true.
 
 > This reviewer notes (in a spirit of collegiality) that the best
@@ -87,6 +90,8 @@ variable names.
 > appropriate, and in others, I would think semicolons might be more
 > suitable.
 
+I've reviewed all colon use and changed many to other forms of punctuation.
+
 Reviewer 3
 ==========
 
@@ -101,7 +106,7 @@ Reviewer 3
 > There doesn't seem to be any justification or explanation for this
 > statement. (R3)
 
-Removed.
+Agreed, and I've removed it.
 
 > Section 3.1: Since most readers of this paper will want to apply these
 > ideas using R, I think it would be a good idea to show how an R
