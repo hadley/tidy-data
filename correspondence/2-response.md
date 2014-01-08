@@ -131,6 +131,8 @@ https://raw.github.com/hadley/tidy-data/master/case-study/deaths.rds
 
 # Minor problems
 
+The following minor problems reported by the reviewers were resolved without need for discussion.
+
 > Abstract: "take in and take out" "input and output"
 
 > p. 1 up 6: "subset" -> "component"
