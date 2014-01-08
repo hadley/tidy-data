@@ -12,7 +12,7 @@
 
 %% an abstract and keywords
 \Abstract{
-A huge amount of effort is spent cleaning data to get it ready for data analysis, but there has been little research on how to make data cleaning as easy and effective as possible. This paper tackles a small, but important, component of data cleaning: data ``tidying''. Tidy datasets are easy to manipulate, model and visualise, and have a specific structure: variables are stored in columns, observations in rows, and a single type of experimental unit per dataset. This framework makes it easy to tidy messy datasets because only a small set of tools are needed to deal with a wide range of un-tidy datasets. This structure also makes it easier to develop tidy tools for data analysis, tools that both input and output tidy datasets. The advantages of a consistent data structure and matching tools are demonstrated with a case study free from mundane data manipulation chores.
+A huge amount of effort is spent cleaning data to get it ready for data analysis, but there has been little research on how to make data cleaning as easy and effective as possible. This paper tackles a small, but important, component of data cleaning: data ``tidying''. Tidy datasets are easy to manipulate, model and visualise, and have a specific structure: each variable is a column, each observation is a row, and each type of observational unit is a table. This framework makes it easy to tidy messy datasets because only a small set of tools are needed to deal with a wide range of un-tidy datasets. This structure also makes it easier to develop tidy tools for data analysis, tools that both input and output tidy datasets. The advantages of a consistent data structure and matching tools are demonstrated with a case study free from mundane data manipulation chores.
 }
 \Keywords{data cleaning, data tidying, relational databases, \proglang{R}}
 \Plainkeywords{data cleaning, data tidying, relational databases, R}
@@ -27,7 +27,7 @@ A huge amount of effort is spent cleaning data to get it ready for data analysis
 \Address{
   Hadley Wickham\\
   Chief Scientist, RStudio\\
-  Adjunct Assitant Professor, Rice University\\
+  Adjunct Professor, Rice University\\
   E-mail: \email{h.wickham@gmail.com}\\
   URL: \url{http://had.co.nz}
 }
@@ -108,7 +108,7 @@ Tidy data is a standard way of mapping the meaning of a dataset to its structure
 \begin{enumerate}
   \item Each variable forms a column,
   \item Each observation forms a row,
-  \item Each table stores information on one type of observational unit.
+  \item Each type of observational unit forms a table.
 \end{enumerate}
 
 \noindent This is Codd's 3rd normal form \citep{codd:1990}, but with the constraints framed in statistical language, and the focus on a single dataset, not the many connected datasets common in relational databases. \textbf{Messy data} is any other other arrangement of the data. 
@@ -138,7 +138,7 @@ Surprisingly, most messy datasets, including types of messiness not explicitly d
 
 A common type of messy dataset is tabular data designed for presentation, where variables form both the rows and columns, and column headers are values, not variable names. While in this paper I call this arrangement messy, in some cases it can be extremely useful. It provides efficient storage for completely crossed designs, and it can provide extremely efficient computation if desired operations can be expressed as matrix operations. This issue is discussed in more depth in Section~\ref{sec:discussion}.
 
-Table~\ref{tbl:pew-raw} shows a subset of a typical dataset of this form. This dataset explores the relationship between income and religion in the US, and comes from a report\footnote{\url{http://religions.pewforum.org/pdf/comparison-Income\%20Distribution\%20of\%20Religious\%20Traditions.pdf}} produced by the Pew Research Center. The Pew Center is an American think-tank that collects data on attitudes to topics from religion to the internet, and produces many reports that contain datasets in the format shown.
+Table~\ref{tbl:pew-raw} shows a subset of a typical dataset of this form. This dataset explores the relationship between income and religion in the US, and comes from a report\footnote{\url{http://religions.pewforum.org/pdf/comparison-Income\%20Distribution\%20of\%20Religious\%20Traditions.pdf}} produced by the Pew Research Center. The Pew Center is an American think-tank that collects data on attitudes to topics ranging from religion to the internet, and produces many reports that contain datasets in the format shown.
 
 \begin{table}[htbp]
   \centering
@@ -147,7 +147,7 @@ Table~\ref{tbl:pew-raw} shows a subset of a typical dataset of this form. This d
   \label{tbl:pew-raw}
 \end{table}
 
-This dataset has three variables, religion, income and frequency, and to tidy it we need to ``melt'', or stack it, turning columns into rows. This makes ``wide'' datasets ``long'' or ``tall'', but I will avoid those terms because they are imprecise. Melting is parameterised by a list of columns that are already variables, or \emph{colvars} for short. The other columns are converted into two variables: a new ``column'' variable that contains repeated column headings and a ``value'' variable that contains a vector of data values concatenated from the previously separate columns. This is illustrated in Table~\ref{tbl:melt} with a toy dataset. The result of melting is a ``molten'' dataset.
+This dataset has three variables, religion, income and frequency, and to tidy it we need to ``melt'', or stack it, turning columns into rows. This makes ``wide'' datasets ``long'' or ``tall'', but I will avoid those terms because they are imprecise. Melting is parameterised by a list of columns that are already variables, or \textbf{colvar}s for short. The other columns are converted into two variables: a new ``column'' variable that contains repeated column headings and a ``value'' variable that contains a vector of data values concatenated from the previously separate columns. This is illustrated in Table~\ref{tbl:melt} with a toy dataset. The result of melting is a ``molten'' dataset.
 
 \begin{table}
   \centering
@@ -164,20 +164,20 @@ The Pew dataset has one colvar, religion, and melting yields Table~\ref{tbl:pew-
 \begin{table}[htbp]
   \centering
   \input{data/pew-clean.tex}
-  \caption{The first ten rows of the tidied Pew survey dataset on income and religion. The variable ``column'' has been renamed to income, and ``value'' to freq.}
+  \caption{The first ten rows of the tidied Pew survey dataset on income and religion. The variable \code{column} has been renamed to income, and \code{value} to freq.}
   \label{tbl:pew-clean}
 \end{table}
 
-Another common use of this data format is to record regularly spaced observations over time. For example, the billboard dataset shown in Table~\ref{tbl:billboard-raw} records the date a song first entered the billboard top 100. It has variables artist, track, date.entered, rank and week. The rank in each week after it enters the top 100 is recorded in 75 columns, \code{wk1} to \code{wk75}. If a song is in the top 100 for less than 75 weeks the remaining columns are filled with missing values.  This form of storage is not tidy, but is useful for data entry because it reduces duplication: otherwise each song in each week would need its own row, and song metadata like title and artist would need to be repeated. This issue will be discussed in more depth in Section~\ref{sub:multiple-types}.
+Another common use of this data format is to record regularly spaced observations over time. For example, the billboard dataset shown in Table~\ref{tbl:billboard-raw} records the date a song first entered the Billboard top 100. It has variables artist, track, date.entered, rank and week. The rank in each week after it enters the top 100 is recorded in 75 columns, \code{wk1} to \code{wk75}. If a song is in the top 100 for less than 75 weeks the remaining columns are filled with missing values.  This form of storage is not tidy, but is useful for data entry because it reduces duplication: otherwise each song in each week would need its own row, and song metadata like title and artist would need to be repeated. This issue will be discussed in more depth in Section~\ref{sub:multiple-types}.
 
 \begin{table}[htbp]
   \centering
   \input{data/billboard-raw.tex}
-  \caption{The first eight billboard top hits for 2000. Other columns not shown are \code{wk4}, \code{wk5}, ..., \code{wk75}.}
+  \caption{The first eight Billboard top hits for 2000. Other columns not shown are \code{wk4}, \code{wk5}, ..., \code{wk75}.}
   \label{tbl:billboard-raw}
 \end{table}
 
-This dataset has colvars year, artist, track, time, and date.entered. Melting yields Table~\ref{tbl:billboard-clean}. I have also done a little cleaning as well as tidying: the column variable has been converted to a week variable by extracting the week number, and I have added a date variable that combines the date the song entered the billboard with the week number.
+This dataset has colvars year, artist, track, time, and date.entered. Melting yields Table~\ref{tbl:billboard-clean}. I have also done a little cleaning as well as tidying: the column variable has been converted to a week variable by extracting the week number, and I have added a date variable that combines the date the song entered the Billboard top 100 with the week number.
 
 \begin{table}[htbp]
   \centering
@@ -320,7 +320,7 @@ Other tools are needed when we have multiple datasets. An advantage of tidy data
 
 \subsection{Visualisation}
 
-Tidy visualisation tools need only to be input-tidy as their output is visual. Domain specific languages work particularly well for the visualisation of tidy datasets because they can describe a visualisation as a mapping between variables in the dataset and aesthetic properties of the graphic like position, size, shape and colour. This is the idea behind the grammar of graphics \citep{wilkinson:2006}, and the layered grammar of graphics \citep{wickham:2007d}, an extension tailored specifically for \proglang{R}.
+Tidy visualisation tools only need to be input-tidy as their output is visual. Domain specific languages work particularly well for the visualisation of tidy datasets because they can describe a visualisation as a mapping between variables in the dataset and aesthetic properties of the graphic like position, size, shape and colour. This is the idea behind the grammar of graphics \citep{wilkinson:2006}, and the layered grammar of graphics \citep{wickham:2007d}, an extension tailored specifically for \proglang{R}.
 
 Most graphical tools in \proglang{R} are input tidy, including the \pkg{base} \code{plot} function, the \pkg{lattice} family of plots \citep{sarkar:2008} and \pkg{ggplot2} \citep{me:ggplot2}. Some specialised tools exist for visualising messy datasets. Some base \proglang{R} functions like \code{barplot}, \code{matplot}, \code{dotchart}, and \code{mosaicplot}, work with messy datasets where variables are spread out over multiple columns. Similarly, the parallel coordinates plot \citep{wegman:1990,inselberg:1985} can be used to create time series plots for messy datasets where each time point is a column.
 
@@ -337,7 +337,7 @@ Modelling is the inspiration that has driven much of this work, because most mod
 
   \item \proglang{SPSS} (\code{glm}): \code{y BY a b c d / DESIGN a b c d c * d}
 
-  \item \proglang{Stata} (\code{regress}): \code{y a b c # d}
+  \item \proglang{Stata} (\code{regress}): \code{y a b c \# d}
 
 
 \end{itemize}
@@ -366,7 +366,7 @@ Another interesting example is the classic paired t-test, which can be computed 
   \label{label}
 \end{table}
 
-While model inputs usually require tidy inputs, model outputs, such as predictions and estimated coefficients, aren't always tidy. This makes it more difficult to combine results from multiple models. For example, in \proglang{R}, the default representation of model coefficients is not tidy because it does not have an explicit variable that records the variable name for each estimate: these are instead recorded as row names. In \proglang{R}, row names must be unique, so combining coefficients from many models (e.g., from bootstrap resamples, or subgroups) requires workarounds to avoid losing important information.  This knocks you out of the flow of analysis and makes it harder to combine the results from multiple models.
+While model inputs usually require tidy inputs, model outputs, such as predictions and estimated coefficients, aren't always tidy. This makes it more difficult to combine results from multiple models. For example, in \proglang{R}, the default representation of model coefficients is not tidy because it does not have an explicit variable that records the variable name for each estimate: these are instead recorded as row names. In \proglang{R}, row names must be unique, so combining coefficients from many models (e.g., from bootstrap resamples, or subgroups) requires workarounds to avoid losing important information. This knocks you out of the flow of analysis and makes it harder to combine the results from multiple models.
 
 \section{Case study} 
 \label{sec:case-study}
@@ -414,13 +414,13 @@ First, we work out the number of people dying each hour by breaking down \code{h
 overall <- ddply(hod2, "hod", summarise, freq_all = sum(freq))
 \end{Verbatim}
 
-Next we work out overall proportion of people dying in each hour:
+Next, we work out the overall proportion of people dying in each hour:
 
 \begin{Verbatim}
 overall <- transform(overall, prop_all = freq_all / sum(freq_all))
 \end{Verbatim}
 
-Then finally join the overall dataset with the individual dataset to make it easier to compare the two:
+Then finally, we join the overall dataset with the individual dataset to make it easier to compare the two:
 
 \begin{Verbatim}
 hod2 <- join(hod2, overall, by = "hod")
@@ -497,7 +497,7 @@ unusual <- subset(devi, resid > 1.5)
 hod_unusual <- match_df(hod2, unusual)
 \end{Verbatim}
 
-Finally, we plot the time courses of the unusual causes in Figure~\ref{fig:disease}. We break the diseases into two plots because of the differences in variability: the top plot shows diseases with over 350 deaths and the bottom with less than 350. The causes of death fall in to three main groups: murders, drowning, and transportation related. Murders are more common at night, drowning in the afternoon, and transportation related during commute times. The pale gray line in the background shows the time course across all diseases.
+Finally, we plot the time courses of the unusual causes in Figure~\ref{fig:disease}. We break the diseases into two plots because of the differences in variability: the top plot shows diseases with over 350 deaths and the bottom with less than 350. The causes of death fall into three main groups: murders, drowning, and transportation related. Murders are more common at night, drowning in the afternoon, and transportation related during commute times. The pale gray line in the background shows the time course across all diseases.
 
 \begin{Verbatim}
 ggplot(data = subset(hod_unusual, n > 350), aes(x = hod, y = prop)) + 
@@ -517,17 +517,15 @@ ggplot(data = subset(hod_unusual, n > 350), aes(x = hod, y = prop)) +
 \section{Discussion}
 \label{sec:discussion}
 
-Data cleaning is an important problem, but it is an uncommon subject of study in statistics. This paper carves out a small but important subset of data cleaning that I've called data tidying: getting the dataset in the right structure to make further manipulation, visualisation and modelling easy. There is still much work to be done: as well as incremental improvements as my understanding of tidy data and tidy tools improves, there are big improvements possible from exploring alternative formulations of tidy data and tackling other data cleaning problems.
+Data cleaning is an important problem, but it is an uncommon subject of study in statistics. This paper carves out a small but important subset of data cleaning that I've called data tidying: getting the dataset in the right structure to make further manipulation, visualisation and modelling easy. There is still much work to be done. Incremental improvements will happen as my understanding of tidy data and tidy tools improves, reducing the friction of getting data into a tidy form, and then manipulating, modelling and visualising it once it's tidy.
 
-There is a chicken-and-egg problem with tidy data: if tidy data is only as useful as the tools that work with it, then tidy tools are inextricably linked to tidy data. This makes it is easy to get stuck in a local maxima where independently changing data structures or data tools does not result in an improved workflow. Breaking out of this local maxima is hard, and requires long-term concerted effort with many false starts. While I hope that this framework for tidy data is not a false start, equally, I don't see it as the final solution and I hope others will build on this framework to develop even better ways of storing data and better tools for working with it.
+Bigger improvements may be possible by exploring alternative formulations of tidiness. There is a chicken-and-egg problem with tidy data: if tidy data is only as useful as the tools that work with it, then tidy tools are inextricably linked to tidy data. This makes it easy to get stuck in a local maxima where independently changing data structures or data tools does not result in an improved workflow. Breaking out of this local maxima is hard, and requires long-term concerted effort with many false starts. While I hope that this framework for tidy data is not a false start, equally, I don't see it as the final solution and I hope others will build on this framework to develop even better ways of storing data and better tools for working with it.
 
-I have found few principles to guide the design of tidy data, which must acknowledge both statistical and cognitive factors. To date, my work has been driven by my experience doing data analysis, connections to relational database design, and introspection on the tools of data analysis. The human factors, user-centred design, and human-computer interaction communities may be able to add to this conversation, but the design of data and tools to work with it has not been an active research topic. In the future, I hope to apply methodologies from these fields (user-testing, ethnography, talk-aloud protocols) to my work to build a better understanding of the cognitive side of data analysis, and how we can best design tools to support the process.
-
-% My definition of tidy data is not exhaustive, and it focusses on the type of data that statisticians most commonly encounter: rectangular data defined by rows and columns. It is not a good fit for data on networks, or entire texts. Additionally, because the focus of this definition is on explicit definition of the data, it may not be suitable for very large datasets, such as microarray or fMRI, which may require special infrastructure for performance.
+I have found few principles to guide the design of tidy data, which must acknowledge both statistical and cognitive factors. To date, my work has been driven by my experience doing data analysis, connections to relational database design, and introspection on the tools of data analysis. The human factors, user-centred design, and human-computer interaction communities may be able to add to this conversation, but the design of data and tools to work with it has not been an active research topic. In the future, I hope to apply methodologies from these fields (user-testing, ethnography, talk-aloud protocols) to my work to build a better understanding of the cognitive side of data analysis, and a better knowledge of how we can design tools to support the process.
 
 Other formulations of tidy data are possible. For example, it would be possible to construct a set of tools for dealing with values stored in multidimensional arrays. This is a common data storage format for large biomedical datasets such as microarray or fMRI data. It is also necessary for many multivariate methods whose underlying theory is based on matrix manipulation. This array-tidy format would be compact and efficient, because there are many efficient tools for working with high-dimensional arrays, even when sparse, and the format would connect more closely with the mathematical basis of statistics. This approach is taken by the Pandas python data analysis library \citep{mckinney:2010}. Even more interestingly, we could consider tidy tools that can ignore the underlying data representation, automatically choosing between array-tidy and dataframe-tidy formats to optimise memory usage and performance.
 
-Apart from tidying, there are many other tasks involved in cleaning data: parsing dates and numbers, identifying missing values, correcting character encodings (for international data), matching similar but not identical values (created by typos), verifying experimental design, filling in structural missing values, not to mention model-based data cleaning that identifies suspicious values. Can we develop other frameworks to make these tasks easier?
+Apart from tidying, there are many other tasks involved in cleaning data: parsing dates and numbers, identifying missing values, correcting character encodings (for international data), matching similar but not identical values (created by typos), verifying experimental design, and filling in structural missing values, not to mention model-based data cleaning that identifies suspicious values. Can we develop other frameworks to make these tasks easier?
 
 % While the tools that power this work grew out of my personal struggle to work with data, the framework that hooks them all together did not develop until I had to teach data cleaning. I could look at a dataset and intuit what needed to be done to it, but I couldn't explain what I was doing, and I found it very difficult to teach. This description of tidy data in this paper easier to teach because students are pretty good at identifying variables and values, and then there is a straightforward path to follow to get data in the right format.
 

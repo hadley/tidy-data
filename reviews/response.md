@@ -58,59 +58,20 @@ I've removed those comments because I know no longer think that they a true.
 > The author also switches between the use of italics, boldface, quotes, and 
 > the LaTeX verbatim environment constantly, which tends to be distracting 
 > at times. (R2)
-
 > - The author uses "colvars" in italics when first naming the terminology, and 
 > then subsequently mentions the Pew dataset contains one colvar, without 
 > italics. (R2)
-
 > - The author does not use formatting on the column names in the caption for 
 > Table 9 but does use \verbatim to reference column names in Table 10's 
 > caption. (R2)
 
-> On page 13, middle of the page, it would be helpful to use quotes around 
-> "by" where applicable, as "modified by the by preposition" does not read well.
-> (R2)
+Thanks for pointing this out. Throughout the next I now use bold face 
+consistently for the first definition of a new term, and verbatim for
+variable names.
 
 > The author overuses colons. In some cases, I found hyphens to be more 
 > appropriate, and in others, I would think semicolons might be more suitable.
-> Some tables also have unreadable characters in them, such as the degree sign 
-> in Table 12's top panel (row 6's artist). Same issue with Table 3's 5th 
-> religion. Table 12's caption also describes there being a left and right 
-> dataset, whereas the subtables are clearly placed above and below.
-> (R2)
 
-> The last sentence in the first paragraph of the discussion needs to be 
-> rephrased for clarity.
-> (R2)
-
-> - Abstract: "variables are stored in columns, observations in rows, and a 
-> single type of..." -- this list isn't logically homogeneous.
-
-> - p.5, 3.1 -- "The Pew Center is an American ... that collects data on 
-> attitudes to topics RANGING from religion to the internet"
-
-> - "Billboard" should always be capitalized as it is a proper noun. 
-
-> - p.13, section 4.2 - "Tidy visualization tools ONLY NEED to be..." 
-
-> - p.16, 4-th line from bottom: "Next, we work out THE overall..." 
-
-> - p.16, 2nd line from the bottom: "Then finally, WE join.."
-
-> - p. 17, "To ensure that the diseaseS we work with..."
-
-> - p.19, "The causes of death fall INTO three main groups: ... " There should 
-> be a hyphen between "transportation" and "related".
-
-> - p. 19, 2nd paragraph of discussion: "This makes it easy"; remove "is".
-
-> - p. 21, last sentence of first paragraph: "and A BETTER KNOWLEDGE OF how 
-> we can best design tools..."
-
-> - p. 21, last paragraph before Acknowledgements "verifying experimental 
-> design, AND filling in..."
-
-> - Author information, last page "Adjunct ASSISTANT Professor"
 
 # Reviewer 3
 
@@ -192,3 +153,42 @@ I've removed those comments because I know no longer think that they a true.
 
 > Section 4.3: I think readers of this paper might find examples from stata 
 > more relevant than those from spss. (R3)
+
+> The last sentence in the first paragraph of the discussion needs to be 
+> rephrased for clarity.
+> (R2)
+
+> Some tables also have unreadable characters in them, such as the degree sign 
+> in Table 12's top panel (row 6's artist). Same issue with Table 3's 5th 
+> religion. Table 12's caption also describes there being a left and right 
+> dataset, whereas the subtables are clearly placed above and below.
+> (R2)
+
+> - Abstract: "variables are stored in columns, observations in rows, and a 
+> single type of..." -- this list isn't logically homogeneous.
+
+> - p.5, 3.1 -- "The Pew Center is an American ... that collects data on 
+> attitudes to topics RANGING from religion to the internet"
+
+> - "Billboard" should always be capitalized as it is a proper noun. 
+
+> - p.13, section 4.2 - "Tidy visualization tools ONLY NEED to be..." 
+
+> - p.16, 4-th line from bottom: "Next, we work out THE overall..." 
+
+> - p.16, 2nd line from the bottom: "Then finally, WE join.."
+
+> - p.19, "The causes of death fall INTO three main groups: ... " There should 
+> be a hyphen between "transportation" and "related".
+
+> - p. 19, 2nd paragraph of discussion: "This makes it easy"; remove "is".
+
+> - p. 21, last sentence of first paragraph: "and A BETTER KNOWLEDGE OF how 
+> we can best design tools..."
+
+
+> - p. 21, last paragraph before Acknowledgements "verifying experimental 
+> design, AND filling in..."
+
+
+> - Author information, last page "Adjunct ASSISTANT Professor"
