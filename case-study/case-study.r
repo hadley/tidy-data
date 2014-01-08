@@ -6,15 +6,23 @@ library(stringr)
 library(MASS)
 source("../data/xtable.r")
 
-# Load data and do basic cleaning for this task
-if (!exists("deaths", inherit = FALSE)) {
-  load("deaths.rdata")
+if (!file.exists("deaths.rds")) {
+  src <- "https://github.com/hadley/mexico-mortality/raw/master/deaths/deaths08.csv.bz2"
+  file.download(src, "deaths.csv.bz2", quiet = TRUE)
+  
+  deaths <- read.csv("deaths08.csv.bz2")
+  unlink("deaths08.csv.bz2")
   deaths$hod[deaths$hod == 99] <- NA
   deaths$hod[deaths$hod == 24] <- 0
   deaths$hod[deaths$hod == 0] <- NA
   deaths$hod <- as.integer(deaths$hod)  
   deaths <- arrange(deaths, yod, mod, dod, hod, cod)
+  deaths <- deaths[c("yod", "mod", "dod", "hod", "cod")]
+  
+  saveRDS(deaths, "deaths.rds")
 }
+
+deaths <- readRDS("deaths.rds")
 
 ok <- subset(deaths, yod == 2008 & mod != 0 & dod != 0)
 xtable(ok[c(1, 1:14 * 2000), c("yod", "mod", "dod", "hod", "cod")], 
