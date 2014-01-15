@@ -191,7 +191,7 @@ This dataset has colvars \code{year}, \code{artist}, \code{track}, \code{time}, 
 
 \subsection{Multiple variables stored in one column}
 
-After melting, the \code{column} variable often becomes a combination of multiple underlying variables. This is illustrated by the tuberculosis (TB) dataset, a sample of which is shown in Table~\ref{tbl:tb-raw}. This dataset comes from the World Health Organisation, and records the counts of confirmed tuberculosis cases by \code{country}, \code{year}, and demographic group. The demographic groups are broken down by \code{sex} (m, f) and \code{age} (0--14, 15--25, 25--34, 35--44, 45--54, 55--64, unknown). 
+After melting, the \code{column} variable names often becomes a combination of multiple underlying variable names. This is illustrated by the tuberculosis (TB) dataset, a sample of which is shown in Table~\ref{tbl:tb-raw}. This dataset comes from the World Health Organisation, and records the counts of confirmed tuberculosis cases by \code{country}, \code{year}, and demographic group. The demographic groups are broken down by \code{sex} (m, f) and \code{age} (0--14, 15--25, 25--34, 35--44, 45--54, 55--64, unknown). 
 
 \begin{table}[htbp]
   \centering
@@ -214,7 +214,7 @@ Table~\subref*{tbl:tb-molten} shows the results of melting the TB dataset, and T
   \label{tbl:tb-clean}
 \end{table}
 
-Storing the values in this form resolves another problem in the original data. We want to compare rates, not counts. But to compute rates, we need to know the population. In the original format, there is no easy way to add a population variable. It has to be stored in a separate table, which makes it hard to correctly match populations to counts. In tidy form, adding variables for population and rate is easy: they just become additional columns.
+Storing the values in this form resolves another problem in the original data. We want to compare rates, not counts. But to compute rates, we need to know the population. In the original format, there is no easy way to add a population variable. It has to be stored in a separate table, which makes it hard to correctly match populations to counts. In tidy form, adding variables for population and rate is easy. They are just additional columns.
 
 \subsection{Variables are stored in both rows and columns}
 
@@ -239,7 +239,7 @@ This dataset is mostly tidy, but we have two variables stored in rows: \code{tmi
   \subfloat[Tidy data]%
     {\label{tbl:weather-tidy}\input{data/weather-clean-2.tex}}%
 
-  \caption{(a) Molten weather dataset. This is almost tidy, but instead of value, the \code{element} column contains names of variables. Missing values are dropped to conserve space. (b) Tidy weather dataset. Each row represents the meteorological measurements for a single day. There are two measured variables, minimum (\code{tmin}) and maximum (\code{tmax}) temperature; all other variables are fixed.}
+  \caption{(a) Molten weather dataset. This is almost tidy, but instead of values, the \code{element} column contains names of variables. Missing values are dropped to conserve space. (b) Tidy weather dataset. Each row represents the meteorological measurements for a single day. There are two measured variables, minimum (\code{tmin}) and maximum (\code{tmax}) temperature; all other variables are fixed.}
   \label{tbl:weather-clean}
 \end{table}
 
@@ -267,7 +267,7 @@ Normalisation is useful for tidying and eliminating inconsistencies. However, th
 
 \subsection{One type in multiple tables}
 
-It's also common to find data values about a single type of observational unit spread out over multiple tables or files. These tables are often split up by another variable, so that each file represents a single year, person, or location. As long as the format for individual records is consistent, this is an easy problem to fix: 
+It's also common to find data values about a single type of observational unit spread out over multiple tables or files. These tables and files are often split up by another variable, so that each represents a single year, person, or location. As long as the format for individual records is consistent, this is an easy problem to fix: 
 
 \begin{enumerate}
   \item Read the files into a list of tables.
