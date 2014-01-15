@@ -292,7 +292,7 @@ A more complicated situation occurs when the dataset structure has changed over 
 \section{Tidy tools}
 \label{sec:tidy-tools}
 
-Once you have a tidy dataset, what can you do with it? Tidy data is only worthwhile if it makes analysis easier. This section discusses tidy tools, tools that take tidy datasets as input and return tidy datasets as output. Tidy tools are useful because the output of one tool can be used as the input to another, making it straightforward to compose multiple tools to solve a problem. Tidy data also ensures that variables are stored in a consistent, explicit manner. This makes each tool simpler, because it doesn't need a Swiss Army knife of parameters for dealing with different dataset structures.
+Once you have a tidy dataset, what can you do with it? Tidy data is only worthwhile if it makes analysis easier. This section discusses tidy tools, tools that take tidy datasets as input and return tidy datasets as output. Tidy tools are useful because the output of one tool can be used as the input to another. This allows you to simply and easily compose multiple tools to solve a problem. Tidy data also ensures that variables are stored in a consistent, explicit manner. This makes each tool simpler, because it doesn't need a Swiss Army knife of parameters for dealing with different dataset structures.
 
 Tools can be messy for two reasons: either they take messy datasets as input (messy-input tools) or they produce messy datasets as output (messy-output tools). Messy-input tools are typically more complicated than tidy-input tools because they need to include some parts of the tidying process. This can be useful for common types of messy datasets, but it typically makes the function more complex, harder to use and harder to maintain. Messy-output tools are frustrating and slow down analysis because they can not be easily composed and you must constantly think about how to convert from one format to another. We'll see examples of both in the following sections.
 
@@ -300,45 +300,44 @@ Next, I give examples of tidy and messy tools for three important components of 
 
 \subsection{Manipulation}
 
-Data manipulation includes variable-by-variable transformation (e.g., \code{log} or \code{sqrt}), as well as aggregation, filtering and reordering. In my experience, there are four extremely common operations that are performed over and over again in the course of an analysis. These are the four fundamental verbs of data manipulation:
+Data manipulation includes variable-by-variable transformation (e.g., \code{log} or \code{sqrt}), as well as aggregation, filtering and reordering. In my experience, these are the four fundamental verbs of data manipulation:
 
 \begin{itemize}
 
-  \item Filtering, or subsetting, where observations are removed based on some
+  \item Filter: subsetting or removing observations based on some
   condition.
 
-  \item Transforming, where new variables are added or existing variables
-  modified. These modifications can involve either a single variable (e.g., 
-  log-transforming a variable), or involve multiple variables (e.g., computing
-  density from weight and volume).
+  \item Transform: adding or modifying variables. These modifications can
+  involve either a single variable (e.g., log-transformation), or multiple 
+  variables (e.g., computing density from weight and volume).
 
-  \item Aggregating, where multiple values are collapsed into a single value,
-  e.g., by summing or taking means.
+  \item Aggregate: collapsing multiple values into a single value (e.g., by 
+  summing or taking means).
 
-  \item Sorting, where the order of observations is changed.
+  \item Sort: changing the order of observations.
 
 \end{itemize}
 
-All these operations are made easier when there is a consistent way to refer to variables. Tidy data provides this because each variable lives in its own column.
+All these operations are made easier when there is a consistent way to refer to variables. Tidy data provides this because each variable resides in its own column.
 
-In \proglang{R}, filtering and transforming are performed by the base \proglang{R} functions \code{subset()} and \code{transform()}. These are input and output-tidy. The \code{aggregate()} function performs group-wise aggregation, is input-tidy, and is output-tidy providing a single aggregation method is used. The \pkg{plyr} package provides tidy \code{summarise()} and \code{arrange()} functions for aggregation and sorting.
+In \proglang{R}, filtering and transforming are performed by the base \proglang{R} functions \code{subset()} and \code{transform()}. These are input and output-tidy. The \code{aggregate()} function performs group-wise aggregation. It is input-tidy. Provided that a single aggregation method is used, it is also output-tidy . The \pkg{plyr} package provides tidy \code{summarise()} and \code{arrange()} functions for aggregation and sorting.
 
-The four verbs can be, and often are, modified by the ``by'' preposition. We often need group-wise aggregates, transformations and subsets, to pick the biggest in each group, oaverage over replicates and so on. Combining each of the four verbs with a by operator allows them to operate on subsets of a data frame at a time. Many \proglang{SAS} {\sc proc}s possess a {\sc by} statement which allows the operation to be performed by group, and are generally input-tidy. Base \proglang{R} possesses a \code{by()} function, which is input-tidy, but not output-tidy, because it produces a list. The \code{ddply()} function from the \pkg{plyr} package is a tidy alternative.
+The four verbs can be, and often are, modified by the ``by'' preposition. We often need to perform group-wise aggregation, transformation and subsetting, to pick the biggest ?? in each group, to average over replicates and so on. Combining a verb with a ``by'' operator is a concise way to apply that operation to subsets of a data frame. Many \proglang{SAS} {\sc proc}s possess a {\sc by} statement which allows the operation to be performed by group. They are generally input-tidy. Base \proglang{R} possesses a \code{by()} function, which is input-tidy, but, because it produces a list, is not output-tidy. The \code{ddply()} function from the \pkg{plyr} package is a tidy alternative.
 
 % Some aggregations occur so frequently they deserve their own optimised implementations. One such operation is (weighted) counting. Base R provides the {\tt table} function for this, but it is not output-tidy: it returns a multidimensional array. An tidy alternative is the {\tt count} function from {\tt plyr}, which returns a tidy dataset with a column for each of the input variables plus a new variable {\tt freq}, which records the number of records in each category.
 
-Other tools are needed when we have multiple datasets. An advantage of tidy data is the ease with which it can be combined with other tidy datasets. All that is needed is a join operator that works by matching common variables and adding new columns. This is implemented in the \code{merge()} function in base \proglang{R}, or the \code{join()} function in \pkg{plyr}. Compare this to the difficulty of combining datasets stored in arrays; these typically require painstaking alignment before matrix operations can be used, and errors can be very hard to detect.
+Other tools are needed when we have multiple datasets. An advantage of tidy data is the ease with which it can be combined with other tidy datasets. All that is needed is a join operator that works by matching common variables and adding new columns. This is implemented in the \code{merge()} function in base \proglang{R}, or the \code{join()} function in \pkg{plyr}. Compare these operators with the difficulty of combining datasets stored in arrays. This task typically requires painstaking alignment before matrix operations can be used, which can can make errors very hard to detect.
 
 \subsection{Visualisation}
 
-Tidy visualisation tools only need to be input-tidy as their output is visual. Domain specific languages work particularly well for the visualisation of tidy datasets because they can describe a visualisation as a mapping between variables in the dataset and aesthetic properties of the graphic like position, size, shape and colour. This is the idea behind the grammar of graphics \citep{wilkinson:2006}, and the layered grammar of graphics \citep{wickham:2007d}, an extension tailored specifically for \proglang{R}.
+Tidy visualisation tools only need to be input-tidy as their output is visual. Domain specific languages work particularly well for the visualisation of tidy datasets because they can describe a visualisation as a mapping between variables and aesthetic properties of the graph (e.g., position, size, shape and colour). This is the idea behind the grammar of graphics \citep{wilkinson:2006}, and the layered grammar of graphics \citep{wickham:2007d}, an extension tailored specifically for \proglang{R}.
 
-Most graphical tools in \proglang{R} are input tidy, including the \pkg{base} \code{plot()} function, the \pkg{lattice} family of plots \citep{sarkar:2008} and \pkg{ggplot2} \citep{me:ggplot2}. Some specialised tools exist for visualising messy datasets. Some base \proglang{R} functions like \code{barplot()}, \code{matplot()}, \code{dotchart()}, and \code{mosaicplot()}, work with messy datasets where variables are spread out over multiple columns. Similarly, the parallel coordinates plot \citep{wegman:1990,inselberg:1985} can be used to create time series plots for messy datasets where each time point is a column.
+Most graphical tools in \proglang{R} are input-tidy, including the \pkg{base} \code{plot()} function, the \pkg{lattice} family of plots \citep{sarkar:2008} and \pkg{ggplot2} \citep{me:ggplot2}. Some specialised tools exist for visualising messy datasets. Some base \proglang{R} functions like \code{barplot()}, \code{matplot()}, \code{dotchart()}, and \code{mosaicplot()}, work with messy datasets where variables are spread out over multiple columns. Similarly, the parallel coordinates plot \citep{wegman:1990,inselberg:1985} can be used to create time series plots for messy datasets where each time point is a column.
 
 \subsection{Modelling}
 \label{sub:modelling}
 
-Modelling is the inspiration that has driven much of this work, because most modelling tools work best with tidy datasets. Every statistical language has a way of describing a model as a connection between different variables, a domain specific language that connects responses to predictors: 
+Modelling is the driving inspiration of this work because most modelling tools work best with tidy datasets. Every statistical language has a way of describing a model as a connection between different variables, a domain specific language that connects responses to predictors: 
 
 \begin{itemize}
 
@@ -353,13 +352,13 @@ Modelling is the inspiration that has driven much of this work, because most mod
 
 \end{itemize}
 
-This is not to say that tidy data is the format used internally to compute the regression. Significant transformations take place to produce a numeric matrix that can easily be fed to standard linear algebra routines. Common transformations include adding an intercept column (column of all ones), turning categorical variables into multiple binary dummy variables, and for smooth terms like splines, projecting the data values on to the appropriate basis functions.
+This is not to say that tidy data is the format used internally to compute the regression. Significant transformations take place to produce a numeric matrix that can easily be fed to standard linear algebra routines. Common transformations include adding an intercept column (a column of ones), turning categorical variables into multiple binary dummy variables, and projecting data onto the appropriate basis of a spline function.
 
 % http://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_glm_sect022.htm
 
-There have been some attempts to adapt modelling functions for specific types of messy datasets. For example, in \proglang{SAS}'s \code{proc glm}, multiple variables on the response side of the equation will be interpreted as repeated measures if the {\sc repeated} keyword is present. For the raw billboard data, we could construct a model of the form \code{wk1-wk76 = track} instead of \code{rank = week * track} on the tidy data (provided week is labelled as a categorical variable). 
+There have been some attempts to adapt modelling functions for specific types of messy datasets. For example, in \proglang{SAS}'s \code{proc glm}, multiple variables on the response side of the equation will be interpreted as repeated measures if the {\sc repeated} keyword is present. For the raw Billboard data, we could construct a model of the form \code{wk1-wk76 = track} instead of \code{rank = week * track} on the tidy data (provided week is labelled as a categorical variable). 
 
-Another interesting example is the classic paired t-test, which can be computed in two ways depending on how the data is stored. If the data is stored as in Table~\subref*{tbl:paired}, then a paired t-test is just a t-test applied to the mean difference between x and y. If it is stored in the form of Table~\subref*{tbl:mixed}, then an equivalent model is to fit a mixed effects model, with a fixed dummy variable representing the \code{variable}, and a random intercept for each id. (In \proglang{R}'s lmer4 notation, this is \code{value ~ variable + (1 | id)}). Either way of modelling the data yields the same result. Without more information we can't say which form of the data is tidy: if x and y represent length of left and right arms, then Table~\subref*{tbl:paired} is tidy, if x and y represent measurements on day 1 and day 10, then Table~\subref*{tbl:mixed} is tidy.
+Another interesting example is the classic paired t-test, which can be computed in two ways depending on how the data is stored. If the data is stored as in Table~\subref*{tbl:paired}, then a paired t-test is just a t-test applied to the mean difference between x and y. If it is stored in the form of Table~\subref*{tbl:mixed}, then an equivalent result can be produced by fitting a mixed effects model, with a fixed dummy variable representing the \code{variable}, and a random intercept for each id. (In \proglang{R}'s lmer4 notation, this is expressed as \code{value ~ variable + (1 | id)}). Either way of modelling the data yields the same result. Without more information we can't say which form of the data is tidy: if x and y represent length of left and right arms, then Table~\subref*{tbl:paired} is tidy, if x and y represent measurements on day 1 and day 10, then Table~\subref*{tbl:mixed} is tidy.
 
 \begin{table}
   \centering
@@ -377,7 +376,7 @@ Another interesting example is the classic paired t-test, which can be computed 
   \label{label}
 \end{table}
 
-While model inputs usually require tidy inputs, model outputs, such as predictions and estimated coefficients, aren't always tidy. This makes it more difficult to combine results from multiple models. For example, in \proglang{R}, the default representation of model coefficients is not tidy because it does not have an explicit variable that records the variable name for each estimate, they are instead recorded as row names. In \proglang{R}, row names must be unique, so combining coefficients from many models (e.g., from bootstrap resamples, or subgroups) requires workarounds to avoid losing important information. This knocks you out of the flow of analysis and makes it harder to combine the results from multiple models. I'm not currently aware of any packages that resolve this problem.
+While model inputs usually require tidy inputs, such attention to detail doesn't carry over to model outputs. Outputs such as predictions and estimated coefficients aren't always tidy. This makes it more difficult to combine results from multiple models. For example, in \proglang{R}, the default representation of model coefficients is not tidy because it does not have an explicit variable that records the variable name for each estimate, they are instead recorded as row names. In \proglang{R}, row names must be unique, so combining coefficients from many models (e.g., from bootstrap resamples, or subgroups) requires workarounds to avoid losing important information. This knocks you out of the flow of analysis and makes it harder to combine the results from multiple models. I'm not currently aware of any packages that resolve this problem.
 
 \section{Case study} 
 \label{sec:case-study}
