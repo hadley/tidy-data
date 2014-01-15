@@ -125,23 +125,23 @@ While order of variables and observations does not affect analysis, a good order
 \section{Tidying messy datasets}
 \label{sec:tidying}
 
-Real datasets can violate the three precepts of tidy data in almost every way imaginable, and often do. While occasionally you do get a dataset that you can start analysing immediately, this is the exception, not the norm.  This section describes the the five most common problems that make datasets messy, along with their remedies:
+Real datasets can, and often do, violate the three precepts of tidy data in almost every way imaginable. While occasionally you do get a dataset that you can start analysing immediately, this is the exception, not the rule. This section describes the five most common problems with messy datasets, along with their remedies:
 
 \begin{itemize}
   \item column headers are values, not variable names
   \item multiple variables are stored in one column
   \item variables are stored in both rows and columns
-  \item multiple types of observational unit are stored in the same table
+  \item multiple types of observational units are stored in the same table
   \item a single observational unit is stored in multiple tables
 \end{itemize}
 
-Surprisingly, most messy datasets, including types of messiness not explicitly described above, can be tidied with a small set of tools: melting, string splitting, and casting. The following sections illustrate each problem with a real dataset that I have encountered in practice, and show how to tidy it. The complete datasets and the \proglang{R} code used to tidy them are available online at \url{https://github.com/hadley/tidy-data}, and in the online supplementary materials for this paper.
+Surprisingly, most messy datasets, including types of messiness not explicitly described above, can be tidied with a small set of tools: melting, string splitting, and casting. The following sections illustrate each problem with a real dataset that I have encountered, and show how to tidy them. The complete datasets and the \proglang{R} code used to tidy them are available online at \url{https://github.com/hadley/tidy-data}, and in the online supplementary materials for this paper.
 
 \subsection{Column headers are values, not variable names}
 
-A common type of messy dataset is tabular data designed for presentation, where variables form both the rows and columns, and column headers are values, not variable names. While in this paper I call this arrangement messy, in some cases it can be extremely useful. It provides efficient storage for completely crossed designs, and it can provide extremely efficient computation if desired operations can be expressed as matrix operations. This issue is discussed in more depth in Section~\ref{sec:discussion}.
+A common type of messy dataset is tabular data designed for presentation, where variables form both the rows and columns, and column headers are values, not variable names. While I would call this arrangement messy, in some cases it can be extremely useful. It provides efficient storage for completely crossed designs, and it can lead to extremely efficient computation if desired operations can be expressed as matrix operations. This issue is discussed in depth in Section~\ref{sec:discussion}.
 
-Table~\ref{tbl:pew-raw} shows a subset of a typical dataset of this form. This dataset explores the relationship between income and religion in the US, and comes from a report\footnote{\url{http://religions.pewforum.org/pdf/comparison-Income\%20Distribution\%20of\%20Religious\%20Traditions.pdf}} produced by the Pew Research Center. The Pew Center is an American think-tank that collects data on attitudes to topics ranging from religion to the internet, and produces many reports that contain datasets in the format shown.
+Table~\ref{tbl:pew-raw} shows a subset of a typical dataset of this form. This dataset explores the relationship between income and religion in the US. It comes from a report\footnote{\url{http://religions.pewforum.org/pdf/comparison-Income\%20Distribution\%20of\%20Religious\%20Traditions.pdf}} produced by the Pew Research Center, an American think-tank that collects data on attitudes to topics ranging from religion to the internet, and produces many reports that contain datasets in this format.
 
 \begin{table}[htbp]
   \centering
@@ -150,7 +150,7 @@ Table~\ref{tbl:pew-raw} shows a subset of a typical dataset of this form. This d
   \label{tbl:pew-raw}
 \end{table}
 
-This dataset has three variables, \code{religion}, \code{income} and \code{frequency}, and to tidy it we need to \textbf{melt}, or stack it, turning columns into rows. This makes wide datasets long or tall, but I will avoid those terms because they are imprecise. Melting is parameterised by a list of columns that are already variables, or \textbf{colvar}s for short. The other columns are converted into two variables: a new variable called \code{column} that contains repeated column headings and a new variable called \code{value} that contains a vector of data values concatenated from the previously separate columns. This is illustrated in Table~\ref{tbl:melt} with a toy dataset. The result of melting is a \textbf{molten} dataset.
+This dataset has three variables, \code{religion}, \code{income} and \code{frequency}. To tidy it, we need to \textbf{melt}, or stack it. In other words, we need to turn columns into rows. While this is often described as making wide datasets long or tall, I will avoid those terms because they are imprecise. Melting is parameterised by a list of columns that are already variables, or \textbf{colvar}s for short. The other columns are converted into two variables: a new variable called \code{column} that contains repeated column headings and a new variable called \code{value} that contains a vector of data values concatenated from the previously separate columns. This is illustrated in Table~\ref{tbl:melt} with a toy dataset. The result of melting is a \textbf{molten} dataset.
 
 \begin{table}
   \centering
@@ -162,16 +162,16 @@ This dataset has three variables, \code{religion}, \code{income} and \code{frequ
   \label{tbl:melt} 
 \end{table}
 
-The Pew dataset has one colvar, \code{religion}, and melting yields Table~\ref{tbl:pew-clean}. The \code{variable} column has been renamed to \code{income}, and the \code{value} column to \code{freq}, to better reflect their roles in this dataset. This form is tidy because each column represents a variable and each row represents an observation, in this case a demographic unit corresponding to a combination of \code{religion} and \code{income}.
+The Pew dataset has one colvar, \code{religion}, and melting yields Table~\ref{tbl:pew-clean}. To better reflect their roles in this dataset, the \code{variable} column has been renamed to \code{income}, and the \code{value} column to \code{freq}. This form is tidy because each column represents a variable and each row represents an observation, in this case a demographic unit corresponding to a combination of \code{religion} and \code{income}.
 
 \begin{table}[htbp]
   \centering
   \input{data/pew-clean.tex}
-  \caption{The first ten rows of the tidied Pew survey dataset on income and religion. The  \code{column} has been renamed to \code{income}, and \code{value} to \code{freq}.}
+  \caption{The first ten rows of the tidied Pew survey dataset on income and religion. The \code{column} has been renamed to \code{income}, and \code{value} to \code{freq}.}
   \label{tbl:pew-clean}
 \end{table}
 
-Another common use of this data format is to record regularly spaced observations over time. For example, the billboard dataset shown in Table~\ref{tbl:billboard-raw} records the date a song first entered the Billboard top 100. It has variables \code{artist}, \code{track}, \code{date.entered}, \code{rank} and \code{week}. The rank in each week after it enters the top 100 is recorded in 75 columns, \code{wk1} to \code{wk75}. If a song is in the top 100 for less than 75 weeks the remaining columns are filled with missing values. This form of storage is not tidy, but is useful for data entry because it reduces duplication; otherwise each song in each week would need its own row, and song metadata like title and artist would need to be repeated. This issue will be discussed in more depth in Section~\ref{sub:multiple-types}.
+Another common use of this data format is to record regularly spaced observations over time. For example, the Billboard dataset shown in Table~\ref{tbl:billboard-raw} records the date a song first entered the Billboard Top 100. It has variables for \code{artist}, \code{track}, \code{date.entered}, \code{rank} and \code{week}. The rank in each week after it enters the top 100 is recorded in 75 columns, \code{wk1} to \code{wk75}. If a song is in the Top 100 for less than 75 weeks the remaining columns are filled with missing values. This form of storage is not tidy, but it is useful for data entry. It reduces duplication since otherwise each song in each week would need its own row, and song metadata like title and artist would need to be repeated. This issue will be discussed in more depth in Section~\ref{sub:multiple-types}.
 
 \begin{table}[htbp]
   \centering
@@ -191,7 +191,7 @@ This dataset has colvars \code{year}, \code{artist}, \code{track}, \code{time}, 
 
 \subsection{Multiple variables stored in one column}
 
-After melting, it often happens that the \code{column} variable is a combination of multiple underlying variables. This is illustrated by the tuberculosis (TB) dataset, a sample of which is shown in Table~\ref{tbl:tb-raw}. This dataset comes from the World Health Organisation, and records the counts of confirmed tuberculosis cases by \code{country}, \code{year}, and demographic group. The demographic groups are broken down by \code{sex} (m, f) and \code{age} (0--14, 15--25, 25--34, 35--44, 45--54, 55--64, unknown). 
+After melting, the \code{column} variable often becomes a combination of multiple underlying variables. This is illustrated by the tuberculosis (TB) dataset, a sample of which is shown in Table~\ref{tbl:tb-raw}. This dataset comes from the World Health Organisation, and records the counts of confirmed tuberculosis cases by \code{country}, \code{year}, and demographic group. The demographic groups are broken down by \code{sex} (m, f) and \code{age} (0--14, 15--25, 25--34, 35--44, 45--54, 55--64, unknown). 
 
 \begin{table}[htbp]
   \centering
@@ -200,9 +200,9 @@ After melting, it often happens that the \code{column} variable is a combination
   \label{tbl:tb-raw}
 \end{table}
 
-Column headers in this format are often separated by some character (\code{.}, \code{-}, \code{\_}, \code{:}) and the string can be broken into pieces using that character as a divider. In other cases, such as for this dataset, more careful string processing is required, or the variable names need to be matched to a lookup table that converts single compound values to values of multiple variables. 
+Column headers in this format are often separated by some character (\code{.}, \code{-}, \code{\_}, \code{:}). While the string can be broken into pieces using that character as a divider, in other cases, such as for this dataset, more careful string processing is required. For example, the variable names can be matched to a lookup table that converts single compound value into multiple component values. 
 
-Table~\subref*{tbl:tb-molten} shows the results of melting the TB dataset, and Table~\subref*{tbl:tb-tidy} the results of splitting the column \code{column} into two real variables: \code{age} and \code{sex}.  
+Table~\subref*{tbl:tb-molten} shows the results of melting the TB dataset, and Table~\subref*{tbl:tb-tidy} shows the results of splitting the column \code{column} into two real variables: \code{age} and \code{sex}.  
 
 \begin{table}[htbp]
   \centering
@@ -214,15 +214,15 @@ Table~\subref*{tbl:tb-molten} shows the results of melting the TB dataset, and T
   \label{tbl:tb-clean}
 \end{table}
 
-Storing the values in this form resolves another problem in the original data. We want to compare rates, not counts, but to compute rates we need to know the population. In the original format, there is no easy way to add a population variable, and it has to be stored in a separate table, which makes it hard to correctly match populations to counts. In tidy form, adding variables to store population and rate is easy; they just become additional columns.
+Storing the values in this form resolves another problem in the original data. We want to compare rates, not counts. But to compute rates, we need to know the population. In the original format, there is no easy way to add a population variable. It has to be stored in a separate table, which makes it hard to correctly match populations to counts. In tidy form, adding variables for population and rate is easy: they just become additional columns.
 
 \subsection{Variables are stored in both rows and columns}
 
-The most complicated form of messy data is when variables have been stored in both rows and columns. Table~\ref{tbl:weather-raw} shows daily weather data from the Global Historical Climatology Network for one weather station (MX17004) in Mexico for five months in 2010. It has variables in individual columns (\code{id}, \code{year}, \code{month}), spread across columns (\code{day}, d1--d31) and across rows (\code{tmin}, \code{tmax}) (minimum and maximum temperature). Months with less than 31 days have structural missing values for the last day(s) of the month. The \code{element} column is not a variable; it stores the names of variables.
+The most complicated form of messy data occurs when variables are stored in both rows and columns. Table~\ref{tbl:weather-raw} shows daily weather data from the Global Historical Climatology Network for one weather station (MX17004) in Mexico for five months in 2010. It has variables in individual columns (\code{id}, \code{year}, \code{month}), spread across columns (\code{day}, d1--d31) and across rows (\code{tmin}, \code{tmax}) (minimum and maximum temperature). Months with less than 31 days have structural missing values for the last day(s) of the month. The \code{element} column is not a variable; it stores the names of variables.
 
-To tidy this dataset we first melt it with colvars \code{id}, \code{year}, \code{month} and the column that contains variable names, \code{element}, yielding Table~\subref*{tbl:weather-molten}. For presentation, we have dropped the missing values, making them implicit rather than explicit. This is permissible because we know how many days are in each month and can easily reconstruct the explicit missing values.
+To tidy this dataset we first melt it with colvars \code{id}, \code{year}, \code{month} and the column that contains variable names, \code{element}. This yields Table~\subref*{tbl:weather-molten}. For presentation, we have dropped the missing values, making them implicit rather than explicit. This is permissible because we know how many days are in each month and can easily reconstruct the explicit missing values.
 
-This dataset is mostly tidy, but we have two variables stored in rows: \code{tmin} and \code{tmax}, the type of observation. Not shown in this example are other meteorological variables \code{prcp} (precipitation) and \code{snow} (snowfall). Fixing this requires the cast, or unstack, operation, which performs the inverse of melting, rotating the \code{element} variable back out into the columns to give Table~\subref*{tbl:weather-tidy}. This form is tidy. There is one variable in each column, and each row represents a day's observations. The cast operation is described in depth in \citet{wickham:2007b}.
+This dataset is mostly tidy, but we have two variables stored in rows: \code{tmin} and \code{tmax}, the type of observation. Not shown in this example are the other meteorological variables \code{prcp} (precipitation) and \code{snow} (snowfall). Fixing this requires the cast, or unstack, operation. This performs the inverse of melting by rotating the \code{element} variable back out into the columns (Table~\subref*{tbl:weather-tidy}). This form is tidy. There is one variable in each column, and each row represents a day's observations. The cast operation is described in depth in \citet{wickham:2007b}.
 
 \begin{table}[htbp]
   \centering
@@ -239,18 +239,18 @@ This dataset is mostly tidy, but we have two variables stored in rows: \code{tmi
   \subfloat[Tidy data]%
     {\label{tbl:weather-tidy}\input{data/weather-clean-2.tex}}%
 
-  \caption{(a) Molten weather dataset.  This is almost tidy, but the \code{element} column contains names of variables, not values. Missing values are dropped to conserve space. (b) Tidy weather dataset. Each row represents the meteorological measurements for a single day.  There are two measured variables, minimum (\code{tmin}) and maximum (\code{tmax}) temperature; all other variables are fixed.}
+  \caption{(a) Molten weather dataset. This is almost tidy, but instead of value, the \code{element} column contains names of variables. Missing values are dropped to conserve space. (b) Tidy weather dataset. Each row represents the meteorological measurements for a single day. There are two measured variables, minimum (\code{tmin}) and maximum (\code{tmax}) temperature; all other variables are fixed.}
   \label{tbl:weather-clean}
 \end{table}
 
 \subsection{Multiple types in one table}
 \label{sub:multiple-types}
 
-Datasets often involve values collected at multiple levels, on different types of observational unit. During tidying, each type of observational unit should be stored in its own table. This is closely related to the idea of database normalisation, where each fact is expressed in only one place; if not, it's possible for inconsistencies to occur. 
+Datasets often involve values collected at multiple levels, on different types of observational units. During tidying, each type of observational unit should be stored in its own table. This is closely related to the idea of database normalisation, where each fact is expressed in only one place. If this is not done, it's possible for inconsistencies to occur. 
 
 %If you're not familiar with normalisation, it can be worthwhile to learn a little about it. There are many good tutorials available online - I found \url{http://phlonx.com/resources/nf3/} after a few minutes of searching. You certainly don't need to become an expert, as most statistical databases only need a small amount of normalisation, but it is extremely helpful for identifying inconsistencies in your data.
 
-The billboard dataset described in Table~\ref{tbl:billboard-clean} actually contains observations on two types of observational unit: the song, and its rank in each week. This is revealed through the duplication of facts about the song; \code{artist} and \code{time} are repeated for every song in each week. The billboard dataset needs to be broken down into two datasets: a song dataset which stores \code{artist}, \code{song name} and \code{time}; and a ranking dataset which gives the \code{rank} of the \code{song} in each \code{week}. Table~\ref{tbl:billboard-normal} shows these two datasets. You could also imagine a week dataset which would record background information about the week, maybe the total number of songs sold or similar demographic information.
+The Billboard dataset described in Table~\ref{tbl:billboard-clean} actually contains observations on two types of observational units: the song and its rank in each week. This manifests itself through the duplication of facts about the song: \code{artist} and \code{time} are repeated for every song in each week. The billboard dataset needs to be broken down into two datasets: a song dataset which stores \code{artist}, \code{song name} and \code{time}, and a ranking dataset which gives the \code{rank} of the \code{song} in each \code{week}. Table~\ref{tbl:billboard-normal} shows these two datasets. You could also imagine a week dataset which would record background information about the week, maybe the total number of songs sold or similar demographic information.
 
 \begin{table}
   \centering
@@ -261,23 +261,23 @@ The billboard dataset described in Table~\ref{tbl:billboard-clean} actually cont
   \label{tbl:billboard-normal}
 \end{table}
 
-Normalisation is useful for tidying and eliminating inconsistencies, but there are few data analysis tools that work directly with relational data, so analysis usually requires denormalisation, merging the datasets back into one table. 
+Normalisation is useful for tidying and eliminating inconsistencies. However, there are few data analysis tools that work directly with relational data, so analysis usually also requires denormalisation or the merging the datasets back into one table. 
 
 % Multiple-choice/check all that apply data
 
 \subsection{One type in multiple tables}
 
-It's also common to find data values about a single type of observational unit spread out over multiple tables, or multiple files. These tables are often split up by another variable, so each file represents a single year, person, or location. As long as the format for individual records is consistent, this is an easy problem to fix: 
+It's also common to find data values about a single type of observational unit spread out over multiple tables or files. These tables are often split up by another variable, so that each file represents a single year, person, or location. As long as the format for individual records is consistent, this is an easy problem to fix: 
 
 \begin{enumerate}
-  \item read the files into a list of tables,
+  \item Read the files into a list of tables.
 
-\item for each table, add a new column that records the original file name (because the file name is often the value of an important variable), then
+\item For each table, add a new column that records the original file name (because the file name is often the value of an important variable).
 
-  \item combine all tables into a single table. 
+  \item Combine all tables into a single table. 
 \end{enumerate}
 
-The \pkg{plyr} package makes this straightforward in \proglang{R}. The following code generates a vector of file names in a directory (\code{data/}), matching a regular exrepssion (ends in \code{.csv}). Next we name each element of the vector with the name of the file. We do this because \pkg{plyr} will preserve the names in the next step, ensuring that each row in the final data frame is labelled with its source. Finally, \code{ldply()} loops over each path, reading in the csv file and combining the results into a single data frame.
+The \pkg{plyr} package makes this a straightforward task in \proglang{R}. The following code generates a vector of file names in a directory (\code{data/}) which match a regular expression (ends in \code{.csv}). Next we name each element of the vector with the name of the file. We do this because \pkg{plyr} will preserve the names in the following step, ensuring that each row in the final data frame is labelled with its source. Finally, \code{ldply()} loops over each path, reading in the csv file and combining the results into a single data frame.
 
 \begin{Verbatim}
 paths <- dir("data", pattern = "\\.csv$", full.names = TRUE)
@@ -287,7 +287,7 @@ ldply(paths, read.csv, stringsAsFactors = FALSE)
 
 Once you have a single table, you can perform additional tidying as needed. An example of this type of cleaning can be found at \url{https://github.com/hadley/data-baby-names} which takes 129 yearly baby name tables provided by the US Social Security Administration and combines them into a single file.
 
-A more complicated situation occurs when the dataset structure has changed over time. For example, the datasets contain different variables, the same variables have different names, different file formats are used, or there are different conventions for missing values. This may require each file to tidied individually (or, if you're lucky, in small groups) and then combined once tidied. An example of this type of tidying is illustrated in \url{https://github.com/hadley/data-fuel-economy}, which shows the tidying of {\sc epa} fuel economy data for over 50,000 cars from 1978 to 2008. The raw data is available online, but each year is stored in a separate file and there are four major formats with many minor variations, making tidying this dataset a considerable challenge.
+A more complicated situation occurs when the dataset structure changes over time. For example, the datasets may contain different variables, the same variables with different names, different file formats, or different conventions for missing values. This may require you to tidy each file to individually (or, if you're lucky, in small groups) and then combine them once tidied. An example of this type of tidying is illustrated in \url{https://github.com/hadley/data-fuel-economy}, which shows the tidying of {\sc epa} fuel economy data for over 50,000 cars from 1978 to 2008. The raw data is available online, but each year is stored in a separate file and there are four major formats with many minor variations, making tidying this dataset a considerable challenge.
 
 \section{Tidy tools}
 \label{sec:tidy-tools}
