@@ -86,11 +86,21 @@ There are many ways to structure the same underlying data. Table~\ref{tbl:preg-r
 
 \subsection{Data semantics}
 
-A table is a collection of data \textbf{values}, typically either numbers (if quantitative) or strings (if qualitative). A \textbf{variable} is a set of measurements of a single quantifiable property for multiple observational units. An \textbf{observation} is a set of measurements of multiple quantifiable properties for a single observational unit. An observational unit is the smallest constituent atom of the experimental unit. For example, in a longitudinal medical study, the experimental unit might be the patient, but the observational unit is the patient at different points in time. In an agricultural experiment, the experimental unit might be the cages assigned different diets, but the observational units are the individual pigs in those cages. In short, while an observational unit represents a conditional property, like blood pressure at time 1 or the weight of pig 2, an experimental unit represents an unconditional property, like blood pressure and weight.
+A table is a collection of data \textbf{values}, usually either numbers (if quantitative) or strings (if qualitative). Values are organised in two ways. Every value belongs to a \textbf{variable} and an \textbf{observation}. A variable collects all values that measure the same underlying attribute (like height, temperature, duration) across units. An observation collects all values measured on the same unit (like a person, or a day, or a race) across attributes. 
 
-The dataset in Tables~\ref{tbl:preg-raw-1} and \ref{tbl:preg-raw-2} contains three variables that comprise 10 values. The data contains a \code{person} variable with three values (John, Mary, and Jane), a \code{treatment} variable with two values (a and b), and a \code{result} variable with has five or six values depending on how you think of the missing value (-, 16, 3, 2, 11, 1). The layout of Tables~\ref{tbl:preg-raw-1} and \ref{tbl:preg-raw-2} makes the number of values clear, but obscures their meaning.
+Table~\ref{tbl:preg-tidy} reorganises the data of Table~\ref{tbl:preg-raw-1} to make the values, variables and obserations more clear. We can see that the dataset contains 18 values representing three variables and six observations. The variables are:
 
-The meaning of the dataset relies on how these values are related to each other. The \code{result} variable was collected over the course of six observations: each \code{person} was observed twice, once for each \code{treatment}. These observations give meaning to the specific values of result. For example, the value 16 is meaningful in the context of the observation: \emph{Jane} scored \emph{16} when she took treatment \code{a}. Table~\ref{tbl:preg-tidy} organizes the dataset around the six observations, making the meaning of the individual values more clear. 
+\begin{enumeriate}
+
+\item \code{person}, with three possible values (John, Mary, and Jane),
+
+\item \code{treatment}, with two possible values (a and b), and 
+
+\item \code{result}, with five or six values depending on how you think of the missing value (-, 16, 3, 2, 11, 1).
+
+\end{enumerate}
+
+The experimental design tells us more about the structure of the observations. In this experiment, every combination of of \code{person} and \code{treatment} was measured, a completely crossed design.
 
 \begin{table}[htbp]
   \centering
@@ -99,8 +109,7 @@ The meaning of the dataset relies on how these values are related to each other.
   \label{tbl:preg-tidy}
 \end{table}
 
-For a given dataset, it's usually easy to figure out what are observations and what are variables, but precisely defining variables and observations in general is surprisingly difficult. For example, if the columns in the Table~\ref{tbl:preg-raw-1} were \code{height} and \code{weight} we would have been happy to call them variables. If the columns were 
-\code{height} and \code{width}, it would be less clear cut, as we might think of height and width as values of a \code{dimension} variable. If the columns were \code{home phone} and \code{work phone}, we could treat these as two variables, but in a fraud detection environment we might want variables \code{phone number} and \code{number type} because the use of one phone number for multiple people might suggest fraud. A general rule of thumb is that it is easier to describe functional relationships between variables (e.g., \code{z} is a linear combination of \code{x} and \code{y}, \code{density} is the ratio of \code{weight} to \code{volume}) than between rows, and it is easier to make comparisons between groups of observations (e.g., average of group a vs.\ average of group b) than between columns.
+For a given dataset, it's usually easy to figure out what are observations and what are variables, but precisely defining variables and observations in general is surprisingly difficult. For example, if the columns in the Table~\ref{tbl:preg-raw-1} were \code{height} and \code{weight} we would have been happy to call them variables. If the columns were \code{height} and \code{width}, it would be less clear cut, as we might think of height and width as values of a \code{dimension} variable. If the columns were \code{home phone} and \code{work phone}, we could treat these as two variables, but in a fraud detection environment we might want variables \code{phone number} and \code{number type} because the use of one phone number for multiple people might suggest fraud. A general rule of thumb is that it is easier to describe functional relationships between variables (e.g., \code{z} is a linear combination of \code{x} and \code{y}, \code{density} is the ratio of \code{weight} to \code{volume}) than between rows, and it is easier to make comparisons between groups of observations (e.g., average of group a vs.\ average of group b) than between columns.
 
 In a given analysis, there may be multiple types of observational unit. For example, in a trial of new allergy medication we might have three observational types: demographic data collected from each person (\code{age}, \code{sex}, \code{race}), medical data collected from each person on each day (\code{number of sneezes}, \code{redness of eyes}), and meterological data collected on each day (\code{temperature}, \code{pollen count}).
 
