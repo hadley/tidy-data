@@ -90,7 +90,7 @@ A table is a collection of data \textbf{values}, usually either numbers (if quan
 
 Table~\ref{tbl:preg-tidy} reorganises the data of Table~\ref{tbl:preg-raw-1} to make the values, variables and obserations more clear. We can see that the dataset contains 18 values representing three variables and six observations. The variables are:
 
-\begin{enumeriate}
+\begin{enumerate}
 
 \item \code{person}, with three possible values (John, Mary, and Jane),
 
@@ -331,7 +331,7 @@ All these operations are made easier when there is a consistent way to refer to 
 
 In \proglang{R}, filtering and transforming are performed by the base \proglang{R} functions \code{subset()} and \code{transform()}. These are input and output-tidy. The \code{aggregate()} function performs group-wise aggregation. It is input-tidy. Provided that a single aggregation method is used, it is also output-tidy . The \pkg{plyr} package provides tidy \code{summarise()} and \code{arrange()} functions for aggregation and sorting.
 
-The four verbs can be, and often are, modified by the ``by'' preposition. We often need to perform group-wise aggregation, transformation and subsetting, to find the largest value in each group, to average over replicates and so on. Combining a verb with a ``by'' operator is a concise way to apply that operation to subsets of a data frame. Many \proglang{SAS} {\sc proc}s possess a {\sc by} statement which allows the operation to be performed by group. They are generally input-tidy. Base \proglang{R} possesses a \code{by()} function, which is input-tidy, but, because it produces a list, is not output-tidy. The \code{ddply()} function from the \pkg{plyr} package is a tidy alternative.
+The four verbs can be, and often are, modified by the ``by'' preposition. We often need group-wise aggregates, transformations and subsets, to pick the biggest in each group, to average over replicates and so on. Combining each of the four verbs with a by operator allows them to operate on subsets of a data frame at a time. Many \proglang{SAS} {\sc proc}s possess a {\sc by} statement which allows the operation to be performed by group, and are generally input-tidy. Base \proglang{R} possesses a \code{by()} function, which is input-tidy, but not output-tidy, because it produces a list. The \code{ddply()} function from the \pkg{plyr} package is a tidy alternative.
 
 % Some aggregations occur so frequently they deserve their own optimised implementations. One such operation is (weighted) counting. Base R provides the {\tt table} function for this, but it is not output-tidy: it returns a multidimensional array. An tidy alternative is the {\tt count} function from {\tt plyr}, which returns a tidy dataset with a column for each of the input variables plus a new variable {\tt freq}, which records the number of records in each category.
 
@@ -390,9 +390,9 @@ While model inputs usually require tidy inputs, such attention to detail doesn't
 \section{Case study} 
 \label{sec:case-study}
 
-The following case study illustrates how tidy data and tidy tools make data analysis easier by easing the transitions between manipulation, visualisation and modelling. You will not see any code that exists solely to get the output of one function into the right format for input to another. I'll show the \proglang{R} code that performs the analysis, but even if you're not familiar with \proglang{R} or the exact idioms I use, I've tried to make it easy to understand by tightly interleaving code, results and explanation.
+The following case study illustrates how tidy data and tidy tools make data analysis easier by easing the transitions between manipulation, visualisation and modelling. You will not see any code that exists solely to get the output of one function into the right format to input to another. I'll show the \proglang{R} code that performs the analysis, but even if you're not familiar with \proglang{R} or the exact idioms I use, I've tried to make it easy to understand by tightly interleaving code, results and explanation.
 
-The case study uses individual-level mortality data from Mexico, with the goal of finding causes of death that have notably different time patterns within a day. The full dataset has information on 539,530 deaths in Mexico in 2008 and 55 variables, including the the location and time of death, the cause of death, and demographics of the deceased. Table~\ref{fig:raw} shows a small sample of the dataset, focussing on variables related to time of death (\code{year}, \code{month}, \code{day} and \code{hour}), and cause (\code{cod}).
+The case study uses individual-level mortality data from Mexico. The goal is to find causes of death with notably different temporal patterns. The full dataset has information on 539,530 deaths in Mexico in 2008 and 55 variables, including the the location and time of death, the cause of death, and demographics of the deceased. Table~\ref{fig:raw} shows a small sample of the dataset, focussing on variables related to time of death (\code{year}, \code{month}, \code{day} and \code{hour}), and cause (\code{cod}).
 
 \begin{table}
   \centering
@@ -401,44 +401,52 @@ The case study uses individual-level mortality data from Mexico, with the goal o
   \label{fig:raw}
 \end{table}
 
-To achieve our goal of finding unusual time courses, we'll start by counting the number of deaths in each hour (\code{hod}) for each cause (\code{cod}) with the tidy \code{count} function. Then we remove missing (and hence uninformative for our purpose) values with \code{subset}. This gives Table~\subref*{tbl:counts:1}.
+To achieve our goal of finding unusual temporal patterns, we do the following. First, we count the number of deaths in each hour (\code{hod}) for each cause (\code{cod}) with the tidy \code{count} function. 
 
 First, we count the the number of deaths in each hour of the day for each cause of death, and remove missing observations:
 
 \begin{Verbatim}
 hod2 <- count(deaths, c("hod", "cod"))
+\end{Verbatim}
+
+Then we remove missing (and hence uninformative for our purpose) values with \code{subset}. 
+
+\begin{Verbatim}
 hod2 <- subset(hod2, !is.na(hod))
 \end{Verbatim}
 
-Next we join the dataset to the \code{codes} dataset which gives informative labels for the disease. These two datasets are connected by the \code{cod} variable. This adds a new variable, \code{disease}, shown in Table~\subref*{tbl:counts:2}).
+This gives Table~\subref*{tbl:counts:1}.
+
+To provide informative labels for disease, we next join the dataset to the \code{codes} dataset . These two datasets are connected by the \code{cod} variable. This adds a new variable, \code{disease}, shown in Table~\subref*{tbl
+:counts:2})
 
 \begin{Verbatim}
 hod2 <- join(hod2, codes, by = "cod")
 \end{Verbatim}
 
-The total deaths for each cause vary over several orders of magnitude: there were 46,794 deaths from heart attack, and 10 deaths from avalanche. This means that it makes more sense to compare the proportion of deaths in each hour, rather than the total number. We compute this by breaking the dataset down by \code{cod}, and then \code{transform()}ing to add a new \code{prop} column, the hourly frequency divided by the total number of deaths from that cause. This new column is Table~\subref*{tbl:counts:3}.
+The total deaths for each cause varies over several orders of magnitude: there are 46,794 deaths from heart attack but only 10 from avalanche. This means that rather than the total number, it makes more sense to compare the proportion of deaths in each hour. We compute this by breaking the dataset down by \code{cod}, and then \code{transform()}ing to add a new \code{prop} column, the hourly frequency divided by the total number of deaths from that cause. This new column is Table~\subref*{tbl:counts:3}.
 
-\code{ddply()} breaks down its first argument (\code{hod2}) by its second argument (the \code{cod} variable), and applies its third argument (\code{transform}) to each piece. The fourth argument (\code{prop = freq / sum(freq)}) is passed on to transform.
+\code{ddply()} breaks down the first argument (\code{hod2}) by its second (the \code{cod} variable), and then applies the third argument (\code{transform}) to each resulting piece. The fourth argument (\code{prop = freq / sum(freq)}) is then passed on to transform.
 
 \begin{Verbatim}
 hod2 <- ddply(hod2, "cod", transform, prop = freq / sum(freq))
 \end{Verbatim}
 
-We then compute the overall average death rate for each hour, and merge that back into the original dataset. This yields Table~\subref*{tbl:counts:4} and allows us to easily compare each disease with the overall pattern by comparing \code{prop} to \code{prop\_all}.
+We then compute the overall average death rate for each hour, and merge that back into the original dataset. This yields Table~\subref*{tbl:counts:4}. By comparing \code{prop} to \code{prop\_all}, we can easily compare each disease with the overall incidence pattern.
 
-First, we work out the number of people dying each hour by breaking down \code{hod2} by \code{hod}, summarising with a total for over each cause of death.
+First, we work out the number of people dying each hour.  We break down \code{hod2} by \code{hod}, and compute the total for each cause of death.
 
 \begin{Verbatim}
 overall <- ddply(hod2, "hod", summarise, freq_all = sum(freq))
 \end{Verbatim}
 
-Next, we work out the overall proportion of people dying in each hour:
+Next, we work out the overall proportion of people dying each hour:
 
 \begin{Verbatim}
 overall <- transform(overall, prop_all = freq_all / sum(freq_all))
 \end{Verbatim}
 
-Then finally, we join the overall dataset with the individual dataset to make it easier to compare the two:
+Finally, we join the overall dataset with the individual dataset to make it easier to compare the two:
 
 \begin{Verbatim}
 hod2 <- join(hod2, overall, by = "hod")
@@ -463,7 +471,7 @@ hod2 <- join(hod2, overall, by = "hod")
   \label{tbl:counts}
 \end{table}
 
-Next we compute a distance between the time course of each cause of death and the overall time course. Here we use a simple mean squared deviation.  We also record the sample size, the total number of deaths from that cause. To ensure that the diseases we work with have a decent amount of underlying data we'll only work with diseases with more than 50 deaths in total ($\sim$2/hour).
+Next we compute a distance between the temporal course of each cause of death and the overall temporal course. Here we use the simple mean squared deviation.  We also record the sample size, the total number of deaths from that cause. To ensure that the diseases we consider are sufficiently representative we'll only work with diseases with more than 50 total deaths ($\sim$2/hour).
 
 \begin{Verbatim}
 devi <- ddply(hod2, "cod", summarise, 
@@ -473,7 +481,7 @@ devi <- ddply(hod2, "cod", summarise,
 devi <- subset(devi, n > 50)
 \end{Verbatim}
 
-We don't know the variance characteristics of this estimator, so we explore it visually by plotting \code{n} vs.\ \code{deviation}, Figure~\ref{fig:deviation-raw}. The linear scale shows little, except the variability decreases with sample size, but on the log-log scale, Figure~\ref{fig:deviation-log} there is a clear pattern. It's particularly easy to see the pattern when we add the line of best fit from a robust linear model. 
+We don't know the variance characteristics of this estimator, but we can explore it visually by plotting \code{n} vs.\ \code{deviation}, Figure~\ref{fig:deviation-raw}. On a linear scale, the plot shows little, except that variability decreases with sample size. But on the log-log scale, Figure~\ref{fig:deviation-log}, there is a clear pattern. This is particularly easy to see the pattern when we add the line of best fit from a robust linear model. 
 
 \begin{Verbatim}
 ggplot(data = devi, aes(x = n, y = dist) + geom_point()
@@ -495,7 +503,7 @@ last_plot() +
     \includegraphics[width=0.5\linewidth]{case-study/n-dist-log.pdf}
   }
 
-  \caption{(Left) Plot of n vs deviation. Variability of deviation dominated by the sample size: small samples have large variability. (Right) Log-log plot makes it easy to see pattern of variation as well as unusually high values.  Blue line is a robust line of best fit.}
+  \caption{(a) Plot of n vs deviation. Variability of deviation is dominated by sample size: small samples have large variability. (b) Log-log plot makes it easy to see the pattern of variation as well as unusually high values.  The blue line is a robust line of best fit.}
   \label{fig:deviation}
 \end{figure}
 
@@ -506,7 +514,9 @@ last_plot() +
   \label{fig:devi-resid}
 \end{figure}
 
-We are interested in points that are high relative to other causes with the same number of deaths, these are the diseases most different from the overall pattern. To find these unusual points, we fit a robust linear model and plot the residuals, as shown in Figure~\ref{fig:devi-resid}. The plot shows an empty region around a residual of 1.5, so somewhat arbitrarily we select those diseases with a residual greater than 1.5. We do that in two steps: first selecting the appropriate rows from \code{devi} (one row per disease), and then finding the matching time course information in the original summary dataset (24 rows per disease).
+We are interested in points that have high $y$-values, relative to their $x$-neighbours. Controlling for the number of deaths, these points represent the diseases which depart the most from the overall pattern.
+
+To find these unusual points, we fit a robust linear model and plot the residuals,  Figure~\ref{fig:devi-resid}. The plot shows an empty region around a residual of 1.5. So somewhat arbitrarily, we'll select those diseases with a residual greater than 1.5. We do this in two steps: first, we select the appropriate rows from \code{devi} (one row per disease), and then we find the matching temporal course information from the original summary dataset (24 rows per disease).
 
 \begin{Verbatim}
 devi$resid <- resid(rlm(log(dist) ~ log(n), data = devi))
@@ -514,7 +524,7 @@ unusual <- subset(devi, resid > 1.5)
 hod_unusual <- match_df(hod2, unusual)
 \end{Verbatim}
 
-Finally, we plot the time courses of the unusual causes in Figure~\ref{fig:disease}. We break the diseases into two plots because of the differences in variability: the top plot shows diseases with over 350 deaths and the bottom with less than 350. The causes of death fall into three main groups: murders, drowning, and transportation related. Murders are more common at night, drowning in the afternoon, and transportation related during commute times. The pale gray line in the background shows the time course across all diseases.
+Finally, we plot the temporal course for each unusual cause, Figure~\ref{fig:disease}. We split the diseases into two plots because of differences in variability. The top plot shows diseases with over 350 deaths and the bottom with under 350. The causes of death fall into three main groups: murder, drowning, and transportation related. Murder is more common at night, drowning in the afternoon, and transportation related deaths during commute times. The pale gray line in the background shows the temporal course across all diseases.
 
 \begin{Verbatim}
 ggplot(data = subset(hod_unusual, n > 350), aes(x = hod, y = prop)) + 
@@ -527,20 +537,20 @@ ggplot(data = subset(hod_unusual, n > 350), aes(x = hod, y = prop)) +
   \centering
     \includegraphics[width=0.9\textwidth]{case-study/unusual-big}
     \includegraphics[width=0.9\textwidth]{case-study/unusual-sml}
-  \caption{Causes of death with unusual time courses. Overall hourly death rate shown in grey. (Top) Causes of death with more than 350 deaths over a year. (Bottom) Causes of death with less than 350 deaths.  Note that different scales are used on the y axis.}
+  \caption{Causes of death with unusual temporal courses. Overall hourly death rate shown in grey. (Top) Causes of death with more than 350 deaths over a year. (Bottom) Causes of death with fewer than 350 deaths. Note that the y-axes are on different scales.}
   \label{fig:disease}
 \end{figure}
 
 \section{Discussion}
 \label{sec:discussion}
 
-Data cleaning is an important problem, but it is an uncommon subject of study in statistics. This paper carves out a small but important subset of data cleaning that I've called data tidying: getting the dataset in the right structure to make further manipulation, visualisation and modelling easy. There is still much work to be done. Incremental improvements will happen as my understanding of tidy data and tidy tools improves, reducing the friction of getting data into a tidy form, and then manipulating, modelling and visualising it once it's tidy.
+Data cleaning is an important problem, but it is an uncommon subject of study in statistics. This paper carves out a small but important subset of data cleaning that I've called data tidying: structuring datasets to facilitate manipulation, visualisation and modelling. There is still much work to be done. Incremental improvements will happen as our understanding of tidy data and tidy tools improves, and as we improve our ability to reduce the friction of getting data into a tidy form.
 
-Bigger improvements may be possible by exploring alternative formulations of tidiness. There is a chicken-and-egg problem with tidy data: if tidy data is only as useful as the tools that work with it, then tidy tools are inextricably linked to tidy data. This makes it easy to get stuck in a local maxima where independently changing data structures or data tools does not result in an improved workflow. Breaking out of this local maxima is hard, and requires long-term concerted effort with many false starts. While I hope that this framework for tidy data is not a false start, equally, I don't see it as the final solution and I hope others will build on this framework to develop even better ways of storing data and better tools for working with it.
+Bigger improvements may be possible by exploring alternative formulations of tidiness. There is a chicken-and-egg problem with tidy data: if tidy data is only as useful as the tools that work with it, then tidy tools will be inextricably linked to tidy data. This makes it easy to get stuck in a local maxima where independently changing data structures or data tools will not improve workflow. Breaking out of this local maxima is hard. It requires long-term concerted effort with the prospect of many false starts. While I hope that the tidy data framework is not one of those false starts, I also don't see it as the final solution. I hope others will build on this framework to develop even better data storage strategies and better tools.
 
-I have found few principles to guide the design of tidy data, which must acknowledge both statistical and cognitive factors. To date, my work has been driven by my experience doing data analysis, connections to relational database design, and introspection on the tools of data analysis. The human factors, user-centred design, and human-computer interaction communities may be able to add to this conversation, but the design of data and tools to work with it has not been an active research topic. In the future, I hope to apply methodologies from these fields (user-testing, ethnography, talk-aloud protocols) to my work to build a better understanding of the cognitive side of data analysis, and a better knowledge of how we can design tools to support the process.
+Surprisingly, I have found few principles to guide the design of tidy data, which acknowledge both statistical and cognitive factors. To date, my work has been driven by my experience doing data analysis, my knowledge of relational database design, and my own rumination on the tools of data analysis. The human factors, user-centered design, and human-computer interaction communities may be able to add to this conversation, but the design of data and tools to work with it has not been an active research topic in those fields. In the future, I hope to use methodologies from these fields (user-testing, ethnography, talk-aloud protocols) to improve our understanding of the cognitive side of data analysis, and to further improve our ability to design appropriate tools.
 
-Other formulations of tidy data are possible. For example, it would be possible to construct a set of tools for dealing with values stored in multidimensional arrays. This is a common data storage format for large biomedical datasets such as microarray or fMRI data. It is also necessary for many multivariate methods whose underlying theory is based on matrix manipulation. This array-tidy format would be compact and efficient, because there are many efficient tools for working with high-dimensional arrays, even when sparse, and the format would connect more closely with the mathematical basis of statistics. This approach is taken by the Pandas python data analysis library \citep{mckinney:2010}. Even more interestingly, we could consider tidy tools that can ignore the underlying data representation, automatically choosing between array-tidy and dataframe-tidy formats to optimise memory usage and performance.
+Other formulations of tidy data are possible. For example, it would be possible to construct a set of tools for dealing with values stored in multidimensional arrays. This is a common storage format for large biomedical datasets generated by microarrays or fMRI's. It's also necessary for many multivariate methods based on matrix manipulation. Fortunately, because there are many efficient tools for working with high-dimensional arrays, even sparse ones, such an array-tidy format is not only likely to be quite compact and efficient, it should also be able to easily connect with the mathematical basis of statistics. This, in fact, is the approach taken by the Pandas python data analysis library \citep{mckinney:2010}. Even more interestingly, we could consider tidy tools that can ignore the underlying data representation and automatically choose between array-tidy and dataframe-tidy formats to optimise memory usage and performance.
 
 Apart from tidying, there are many other tasks involved in cleaning data: parsing dates and numbers, identifying missing values, correcting character encodings (for international data), matching similar but not identical values (created by typos), verifying experimental design, and filling in structural missing values, not to mention model-based data cleaning that identifies suspicious values. Can we develop other frameworks to make these tasks easier?
 
@@ -549,7 +559,7 @@ Apart from tidying, there are many other tasks involved in cleaning data: parsin
 \section{Acknowledgements} 
 \label{sec:acknowledgements}
 
-This work wouldn't be possible without the many conversations I've had about data and how to deal with it statistically. I'd particularly like to thank Phil Dixon, Di Cook, and Heike Hofmann, who have put up with numerous questions over the years. I'd also like to thank the users of the \pkg{reshape} package who have provided many challenging problems, and my students who continue to challenge me to explain what I know in a way that they can understand. I'd also like to thank Bob Muenchen, Burt Gunter, Nick Horton and Garrett Grolemund who gave detailed comments on earlier drafts, and to particularly thank Ross Gayler who provided the nice example of the challenges of defining what a variable is and Ben Bolker who showed me the natural equivalent between a paired t-test and a mixed effects model.
+This work wouldn't be possible without the many conversations I've had about data and how to deal with them statistically. I'd particularly like to thank Phil Dixon, Di Cook, and Heike Hofmann, who have put up with numerous questions over the years. I'd also like to thank the users of the \pkg{reshape} package who have provided many challenging problems, and my students who continue to challenge me to explain what I know in a way that they can understand. I'd also like to thank Bob Muenchen, Burt Gunter, Nick Horton and Garrett Grolemund who gave detailed comments on earlier drafts, and to particularly thank Ross Gayler who provided the nice example of the challenges of defining a variable and Ben Bolker who showed me the natural equivalence between a paired t-test and a mixed effects model. 
 
 % bibtool -x tidy-data.aux -c > references.bib 
 \bibliography{references}
