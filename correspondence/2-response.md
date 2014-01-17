@@ -1,29 +1,18 @@
 I really appreciate the thoughtful comments of all the reviewers. I've
-worked hard to make the paper easier to understand and the reviewer's
-comments were extremely useful. A point-by-point summary of the comments
-and my rebuttal is below. Minor comments fixed without needing further
-discussion are listed at the end.
+worked hard to make the paper easier to understand, and proof read it
+several more times. I include a point-by-point summary of the reviewer's
+comments and my rebuttal below. Minor problems fixed without needing
+further discussion are listed at the end.
 
 Reviewer 1
 ==========
-
-> Details of writing: There is opportunity for improvement and for
-> strengthening the exposition at a local level – in sentences and
-> phrases. This reviewer has just read Wickham's 2011 paper in the same
-> journal on "Split-Apply-Combine", and the writing in that paper is
-> good and can serve as a model for polishing the present paper. The
-> differences between the two are in the details, and a thorough editing
-> and tightening of the present manuscript would almost surely pay
-> dividends. Without trying to be comprehensive, I will illustrate the
-> kinds of small changes (including just fixing typos) which taken
-> together would have a positive effect. (R1)
 
 > p. 1 last full sentence: "The reorganization makes...because it
 > conforms to a standard that facilitates well an initial exploration
 > and analysis of the data; you don't..."
 
 I'm not quite sure what the reviewer meant here, but I've rewritten the
-paragraph for clarity.
+entire paragraph for clarity.
 
 > p. 2 line 2: Is "reformulating" an approximation for "munging"?
 
@@ -57,8 +46,8 @@ true.
 > ..." grates more than a little ... but regrettably this is a battle
 > that is now lost. Sigh... :) :)
 
-I tried changing "data is" to "data are", and found the result grating. I 
-think you're right that the battle is lost.
+I tried changing "data is" to "data are", and found the result grating.
+I think you're right that the battle is lost.
 
 Reviewer 2
 ==========
@@ -68,9 +57,10 @@ Reviewer 2
 > contractions, ambiguous pronouns ("It's often said..."), and casually
 > addresses the reader in second-person form. (R2)
 
-I have largely kept the conversational style of the paper. I don't think it's
-necessary for a scientific paper to be too formal. This work appeals
-more to practicioners of data analysis than academic statisticians, so I think
+I have largely kept the conversational style of the paper, while trying
+to make it easier to understand. I don't think it's necessary for a
+scientific paper to be too formal. This work appeals more to
+practicioners of data analysis than academic statisticians, so I think
 it is particularly important that the writing is approachable.
 
 > The author also switches between the use of italics, boldface, quotes,
@@ -90,7 +80,7 @@ variable names.
 > appropriate, and in others, I would think semicolons might be more
 > suitable.
 
-I've reviewed all colon use and changed many to other forms of punctuation.
+I've reviewed all colons and changed many to other forms of punctuation.
 
 Reviewer 3
 ==========
@@ -98,6 +88,9 @@ Reviewer 3
 > The author is obviously intimately familiar with the tools he's using
 > in this paper, and he should remember that the readers of this paper
 > are not nearly as familiar with them as he is. (R3)
+
+I have tried to clarify terms and explain things more clearly
+thoroughout the paper
 
 > Section 2: "When using tables for communication, this so-called
 > "Alabama first" (Wainer 2000) ordering should be abandoned, and
@@ -141,7 +134,7 @@ Right, and I've now removed this sentence.
 > https://raw.github.com/hadley/tidy-data/master/case-study/deaths.rdata;
 > I recieved a 403 Forbidden error. (R3)
 
-Smaller version that you can download now at
+Smaller version that you can now download is at
 https://raw.github.com/hadley/tidy-data/master/case-study/deaths.rds
 
 > I think there should be a more thorough discussion explaining the goal
@@ -151,6 +144,9 @@ https://raw.github.com/hadley/tidy-data/master/case-study/deaths.rds
 > that have notably different time patterns within a day." really didn't
 > clarify the goal sufficiently for me. Perhaps an example of an unusual
 > time course would help to clarify things. (R3)
+
+I've added a figure showing the temporal pattern over all causes of
+death, and tweaked the explanation. Hopefully this should now be clear.
 
 Minor problems
 ==============

@@ -47,13 +47,13 @@ A huge amount of effort is spent cleaning data to get it ready for analysis, but
 
 \section{Introduction}
 
-It is often said that 80\% of data analysis is spent on the process of cleaning and preparing the data \citep{dasu:2003}. However, since such data cleaning is often repeated over the course of analysis as new problems come to light, it is much more than just a first step. Despite the amount of time it takes, there has been surprisingly little research on how to clean data well. Part of the challenge is the breadth of activities it encompasses: from outlier checking, to date parsing, to missing value imputation. To get a handle on the problem, this paper focusses on a small, but important, aspect of data cleaning that I call data \textbf{tidying}: the structuring of datasets to facilitate analysis.
+It is often said that 80\% of data analysis is spent on the process of cleaning and preparing the data \citep{dasu:2003}. Data preparation is not just a first step, but must be repeated many over the course of analysis as new problems come to light or new data is collected. Despite the amount of time it takes, there has been surprisingly little research on how to clean data well. Part of the challenge is the breadth of activities it encompasses: from outlier checking, to date parsing, to missing value imputation. To get a handle on the problem, this paper focusses on a small, but important, aspect of data cleaning that I call data \textbf{tidying}: structuring datasets to facilitate analysis.
 
-The principles of tidy data provide a standard way of organising data values within a dataset. A standard makes the initial data cleaning easier because you don't need to start from scratch and reinvent the wheel each time. The tidy data standard has been designed to facilitate the initial exploration and analysis of the data, and to simplify the development of data analysis tools which can work together seamlessly. Current tools often require translation. You need to spend time munging the output from one tool so you can input it into another. Tidy datasets and tidy tools work hand in hand to make data analysis easier, allowing you to focus on the interesting domain problem, and not on the uninteresting logistics of your data.
+The principles of tidy data provide a standard way to organise data values within a dataset. A standard makes initial data cleaning easier because you don't need to start from scratch and reinvent the wheel every time. The tidy data standard has been designed to facilitate initial exploration and analysis of the data, and to simplify the development of data analysis tools that work well together. Current tools often require translation. You have to spend time munging the output from one tool so you can input it into another. Tidy datasets and tidy tools work hand in hand to make data analysis easier, allowing you to focus on the interesting domain problem, not on the uninteresting logistics of data.
 
 The principles of tidy data are closely tied to those of relational databases and Codd's relational algebra \citep{codd:1990}, but are framed in a language familiar to statisticians. Computer scientists have also contributed much to the study of data cleaning. For example, \citet{lakshmanan:1996} define an extension to SQL to allow it to operate on messy datasets, \citet{raman:2001} provide a framework for cleaning datasets, and \citet{kandel:2011} develop an interactive tool with a friendly user interface which automatically creates code to clean data. These tools are useful but they are presented in a language foreign to most statisticians, they fail to give much advice on how datasets should be structured, and they lack connections to the tools of data analysis.
 
-The development of tidy data has been driven by my experience working with real-world datasets. With few, if any, constraints on their organisation, such datasets are constructed in often bizarre ways. I have spent countless hours struggling to get such datasets organised in a way that makes data analysis possible, let alone easy. I have also struggled to impart these skills to my students so they could tackle real-world datasets on their own. In the course of these struggles I developed the \pkg{reshape} and \pkg{reshape2} \citep{wickham:2007b} \proglang{R} packages. While I could intuitively use the tools, I lacked the framework to make my intuition explicit. This paper provides that framework. It provides a comprehensive ``philosophy of data'': one that underlies my work in the \pkg{plyr} \citep{me:plyr} and \pkg{ggplot2} \citep{me:ggplot2} packages.
+The development of tidy data has been driven by my experience working with real-world datasets. With few, if any, constraints on their organisation, such datasets are often constructed in bizarre ways. I have spent countless hours struggling to get such datasets organised in a way that makes data analysis possible, let alone easy. I have also struggled to impart these skills to my students so they could tackle real-world datasets on their own. In the course of these struggles I developed the \pkg{reshape} and \pkg{reshape2} \citep{wickham:2007b} packages. While I could intuitively use the tools and teach them through examples, I lacked the framework to make my intuition explicit. This paper provides that framework. It provides a comprehensive ``philosophy of data'': one that underlies my work in the \pkg{plyr} \citep{me:plyr} and \pkg{ggplot2} \citep{me:ggplot2} packages.
 
 The paper proceeds as follows. Section~\ref{sec:defining} begins by defining the three characteristics that make a dataset tidy. Since most real world datasets are not tidy, Section~\ref{sec:tidying} describes the operations needed to make messy datasets tidy, and illustrates the techniques with a range of real examples. Section~\ref{sec:tidy-tools} defines tidy tools, tools that input and output tidy datasets, and discusses how tidy data and tidy tools together can make data analysis easier. These principles are illustrated with a small case study in Section~\ref{sec:case-study}. Section~\ref{sec:discussion} concludes with a discussion of what this framework misses and what other approaches might be fruitful to pursue.
 
@@ -62,11 +62,11 @@ The paper proceeds as follows. Section~\ref{sec:defining} begins by defining the
 
 \epigraph{Happy families are all alike; every unhappy family is unhappy in its own way}{Leo Tolstoy}
 
-Like families, tidy datasets are all alike but every messy dataset is messy in its own way. Tidy datasets provide a standardized way to link the structure of a dataset (its physical layout) with its semantics (its meaning). In this section, I'll provide some standard vocabulary for describing the structure of a dataset, its semantics, and then use those definitions to define tidy data.
+Like families, tidy datasets are all alike but every messy dataset is messy in its own way. Tidy datasets provide a standardized way to link the structure of a dataset (its physical layout) with its semantics (its meaning). In this section, I'll provide some standard vocabulary for describing the structure and semantics of a dataset, and then use those definitions to define tidy data.
 
 \subsection{Data structure}
 
-Most statistical datasets are rectangular tables made up of \textbf{rows} and \textbf{columns}. While columns are almost always labelled, rows are sometimes not. Table~\ref{tbl:preg-raw-1} provides some data about an imaginary experiment in a format commonly seen in the wild. The table has two columns and three rows, and both rows and columns are labelled.
+Most statistical datasets are rectangular tables made up of \textbf{rows} and \textbf{columns}. The columns are almost always labelled and the rows are sometimes labelled. Table~\ref{tbl:preg-raw-1} provides some data about an imaginary experiment in a format commonly seen in the wild. The table has two columns and three rows, and both rows and columns are labelled.
 
 \begin{table}[htbp]
   \centering
@@ -75,7 +75,7 @@ Most statistical datasets are rectangular tables made up of \textbf{rows} and \t
   \label{tbl:preg-raw-1}
 \end{table}
 
-There are many ways to structure the same underlying data. Table~\ref{tbl:preg-raw-2} shows the same data as Table~\ref{tbl:preg-raw-1}, but the rows and columns have been transposed. The data is the same, but the layout is different. Our vocabulary of rows and columns is simply not rich enough to describe why the two tables represent the same data. In addition to appearance, what we need is a way to describe the underlying semantics, or meaning, of the values displayed in the dataset.
+There are many ways to structure the same underlying data. Table~\ref{tbl:preg-raw-2} shows the same data as Table~\ref{tbl:preg-raw-1}, but the rows and columns have been transposed. The data is the same, but the layout is different. Our vocabulary of rows and columns is simply not rich enough to describe why the two tables represent the same data. In addition to appearance, we need a way to describe the underlying semantics, or meaning, of the values displayed in table.
 
 \begin{table}[htbp]
   \centering
@@ -86,9 +86,9 @@ There are many ways to structure the same underlying data. Table~\ref{tbl:preg-r
 
 \subsection{Data semantics}
 
-A table is a collection of data \textbf{values}, usually either numbers (if quantitative) or strings (if qualitative). Values are organised in two ways. Every value belongs to a \textbf{variable} and an \textbf{observation}. A variable collects all values that measure the same underlying attribute (like height, temperature, duration) across units. An observation collects all values measured on the same unit (like a person, or a day, or a race) across attributes. 
+A dataset is a collection of \textbf{values}, usually either numbers (if quantitative) or strings (if qualitative). Values are organised in two ways. Every value belongs to a \textbf{variable} and an \textbf{observation}. A variable contains all values that measure the same underlying attribute (like height, temperature, duration) across units. An observation contains all values measured on the same unit (like a person, or a day, or a race) across attributes. 
 
-Table~\ref{tbl:preg-tidy} reorganises the data of Table~\ref{tbl:preg-raw-1} to make the values, variables and obserations more clear. We can see that the dataset contains 18 values representing three variables and six observations. The variables are:
+Table~\ref{tbl:preg-tidy} reorganises Table~\ref{tbl:preg-raw-1} to make the values, variables and obserations more clear. The dataset contains 18 values representing three variables and six observations. The variables are:
 
 \begin{enumerate}
 
@@ -100,7 +100,7 @@ Table~\ref{tbl:preg-tidy} reorganises the data of Table~\ref{tbl:preg-raw-1} to 
 
 \end{enumerate}
 
-The experimental design tells us more about the structure of the observations. In this experiment, every combination of of \code{person} and \code{treatment} was measured, a completely crossed design.
+The experimental design tells us more about the structure of the observations. In this experiment, every combination of of \code{person} and \code{treatment} was measured, a completely crossed design. The experimental design also determines whether or not missing values can be safely dropped. In this experiment, the missing value represents an observation that should have been made, but wasn't, so it's important to keep it. Structural missing values, which represent measurements that can not be made (e.g. the count of pregnant males) can be safely removed.
 
 \begin{table}[htbp]
   \centering
@@ -109,9 +109,9 @@ The experimental design tells us more about the structure of the observations. I
   \label{tbl:preg-tidy}
 \end{table}
 
-For a given dataset, it's usually easy to figure out what are observations and what are variables, but precisely defining variables and observations in general is surprisingly difficult. For example, if the columns in the Table~\ref{tbl:preg-raw-1} were \code{height} and \code{weight} we would have been happy to call them variables. If the columns were \code{height} and \code{width}, it would be less clear cut, as we might think of height and width as values of a \code{dimension} variable. If the columns were \code{home phone} and \code{work phone}, we could treat these as two variables, but in a fraud detection environment we might want variables \code{phone number} and \code{number type} because the use of one phone number for multiple people might suggest fraud. A general rule of thumb is that it is easier to describe functional relationships between variables (e.g., \code{z} is a linear combination of \code{x} and \code{y}, \code{density} is the ratio of \code{weight} to \code{volume}) than between rows, and it is easier to make comparisons between groups of observations (e.g., average of group a vs.\ average of group b) than between columns.
+For a given dataset, it's usually easy to figure out what are observations and what are variables, but it is surprisingly difficult to precisely define variables and observations in general. For example, if the columns in the Table~\ref{tbl:preg-raw-1} were \code{height} and \code{weight} we would have been happy to call them variables. If the columns were \code{height} and \code{width}, it would be less clear cut, as we might think of height and width as values of a \code{dimension} variable. If the columns were \code{home phone} and \code{work phone}, we could treat these as two variables, but in a fraud detection environment we might want variables \code{phone number} and \code{number type} because the use of one phone number for multiple people might suggest fraud. A general rule of thumb is that it is easier to describe functional relationships between variables (e.g., \code{z} is a linear combination of \code{x} and \code{y}, \code{density} is the ratio of \code{weight} to \code{volume}) than between rows, and it is easier to make comparisons between groups of observations (e.g., average of group a vs.\ average of group b) than between groups of columns.
 
-In a given analysis, there may be multiple types of observational unit. For example, in a trial of new allergy medication we might have three observational types: demographic data collected from each person (\code{age}, \code{sex}, \code{race}), medical data collected from each person on each day (\code{number of sneezes}, \code{redness of eyes}), and meterological data collected on each day (\code{temperature}, \code{pollen count}).
+In a given analysis, there may be multiple levels of observation. For example, in a trial of new allergy medication we might have three observational types: demographic data collected from each person (\code{age}, \code{sex}, \code{race}), medical data collected from each person on each day (\code{number of sneezes}, \code{redness of eyes}), and meterological data collected on each day (\code{temperature}, \code{pollen count}).
 
 \subsection{Tidy data}
 
@@ -125,9 +125,9 @@ Tidy data is a standard way of mapping the meaning of a dataset to its structure
 
 \noindent This is Codd's 3rd normal form \citep{codd:1990}, but with the constraints framed in statistical language, and the focus put on a single dataset rather than the many connected datasets common in relational databases. \textbf{Messy data} is any other other arrangement of the data. 
 
-Table~\ref{tbl:preg-tidy} is the tidy version of Table~\ref{tbl:preg-raw-1}. Each row represents an observation, the \code{result} of one \code{treatment} on one \code{person}, and each column is a variable. We could also choose to drop the row containing the missing value, because missing values should only be omitted if they are structural, impossible because of the design of the experiment.
+Table~\ref{tbl:preg-tidy} is the tidy version of Table~\ref{tbl:preg-raw-1}. Each row represents an observation, the \code{result} of one \code{treatment} on one \code{person}, and each column is a variable.
 
-Because it provides a standard way of structuring a dataset, tidy data makes it easy for an analyst or a computer to extract needed variables. Contrast Table~\ref{tbl:preg-tidy} to Table~\ref{tbl:preg-raw-1}: in Table~\ref{tbl:preg-raw-1} you need to use different strategies to extract different variables. This slows analysis and invites errors. If you consider how many data analysis operations involve all of the values in a variable (every aggregating function), you can see how important it is to extract these values in a standard, simple way. Tidy data is particularly well suited for vectorised programming languages like \proglang{R}, because the layout ensures that values of different variables from the same observation are always paired.
+Because it provides a standard way of structuring a dataset, tidy data makes it easy for an analyst or a computer to extract needed variables. Contrast Table~\ref{tbl:preg-tidy} to Table~\ref{tbl:preg-raw-1}: in Table~\ref{tbl:preg-raw-1} you need to use different strategies to extract different variables. This slows analysis and invites errors. If you consider how many data analysis operations involve all of the values in a variable (every aggregating function), you can see how important it is to extract these values in a simple, standard way. Tidy data is particularly well suited for vectorised programming languages like \proglang{R}, because the layout ensures that values of different variables from the same observation are always paired.
 
 While order of variables and observations does not affect analysis, a good ordering makes it easier to scan the raw values. One way of organising variables is by their role in the analysis: are values fixed by the design of the data collection, or are they measured during the course of the experiment? Fixed variables describe the experimental design and are known in advance. Computer scientists often call fixed variables dimensions, and statisticians usually denote them with subscripts on random variables. Measured variables are what we actually measure in the study. Fixed variables should come first, followed by measured variables, each ordered so that related variables are contiguous. Rows can then be ordered by the first variable, breaking ties with the second and subsequent (fixed) variables. This is the convention adopted by all tabular displays in this paper. 
 
@@ -392,7 +392,16 @@ While model inputs usually require tidy inputs, such attention to detail doesn't
 
 The following case study illustrates how tidy data and tidy tools make data analysis easier by easing the transitions between manipulation, visualisation and modelling. You will not see any code that exists solely to get the output of one function into the right format to input to another. I'll show the \proglang{R} code that performs the analysis, but even if you're not familiar with \proglang{R} or the exact idioms I use, I've tried to make it easy to understand by tightly interleaving code, results and explanation.
 
-The case study uses individual-level mortality data from Mexico. The goal is to find causes of death with notably different temporal patterns. The full dataset has information on 539,530 deaths in Mexico in 2008 and 55 variables, including the the location and time of death, the cause of death, and demographics of the deceased. Table~\ref{fig:raw} shows a small sample of the dataset, focussing on variables related to time of death (\code{year}, \code{month}, \code{day} and \code{hour}), and cause (\code{cod}).
+The case study uses individual-level mortality data from Mexico. The goal is to find causes of death with unusual temporal patterns within a day. Figure~\ref{fig:overall} shows the temporal pattern, the number of deaths per hour, for all causes of death. My goal is to find the diseases that differ most from this pattern.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.65\linewidth]{case-study/overall}
+  \caption{Temporal pattern of all causes of death.}
+  \label{fig:overall}
+\end{figure}
+
+The full dataset has information on 539,530 deaths in Mexico in 2008 and 55 variables, including the the location and time of death, the cause of death, and demographics of the deceased. Table~\ref{fig:raw} shows a small sample of the dataset, focussing on variables related to time of death (\code{year}, \code{month}, \code{day} and \code{hour}), and cause (\code{cod}).
 
 \begin{table}
   \centering
@@ -402,8 +411,6 @@ The case study uses individual-level mortality data from Mexico. The goal is to 
 \end{table}
 
 To achieve our goal of finding unusual temporal patterns, we do the following. First, we count the number of deaths in each hour (\code{hod}) for each cause (\code{cod}) with the tidy \code{count} function. 
-
-First, we count the the number of deaths in each hour of the day for each cause of death, and remove missing observations:
 
 \begin{Verbatim}
 hod2 <- count(deaths, c("hod", "cod"))
@@ -415,10 +422,7 @@ Then we remove missing (and hence uninformative for our purpose) values with \co
 hod2 <- subset(hod2, !is.na(hod))
 \end{Verbatim}
 
-This gives Table~\subref*{tbl:counts:1}.
-
-To provide informative labels for disease, we next join the dataset to the \code{codes} dataset . These two datasets are connected by the \code{cod} variable. This adds a new variable, \code{disease}, shown in Table~\subref*{tbl
-:counts:2})
+This gives Table~\subref*{tbl:counts:1}. To provide informative labels for disease, we next join the dataset to the \code{codes} dataset, connected by the \code{cod} variable. This adds a new variable, \code{disease}, shown in Table~\subref*{tbl:counts:2}.
 
 \begin{Verbatim}
 hod2 <- join(hod2, codes, by = "cod")
@@ -481,7 +485,7 @@ devi <- ddply(hod2, "cod", summarise,
 devi <- subset(devi, n > 50)
 \end{Verbatim}
 
-We don't know the variance characteristics of this estimator, but we can explore it visually by plotting \code{n} vs.\ \code{deviation}, Figure~\ref{fig:deviation-raw}. On a linear scale, the plot shows little, except that variability decreases with sample size. But on the log-log scale, Figure~\ref{fig:deviation-log}, there is a clear pattern. This is particularly easy to see the pattern when we add the line of best fit from a robust linear model. 
+We don't know the variance characteristics of this estimator, but we can explore it visually by plotting \code{n} vs.\ \code{deviation}, Figure~\subref*{fig:deviation-raw}. On a linear scale, the plot shows little, except that variability decreases with sample size. But on the log-log scale, Figure~\subref*{fig:deviation-log}, there is a clear pattern. This is particularly easy to see the pattern when we add the line of best fit from a robust linear model. 
 
 \begin{Verbatim}
 ggplot(data = devi, aes(x = n, y = dist) + geom_point()
@@ -509,7 +513,7 @@ last_plot() +
 
 \begin{figure}[htbp]
   \centering
-    \includegraphics[width=0.5\linewidth]{case-study/n-dist-resid}
+  \includegraphics[width=0.5\linewidth]{case-study/n-dist-resid}
   \caption{Residuals from a robust linear model predicting $\log(dist)$ by $\log(n)$. Horizontal line at 1.5 shows threshold for further exploration.}
   \label{fig:devi-resid}
 \end{figure}

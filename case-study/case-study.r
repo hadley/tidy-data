@@ -34,6 +34,13 @@ codes$disease <- sapply(codes$disease, function(x)
 names(codes)[1] <- "cod"
 codes <- codes[!duplicated(codes$cod), ]
 
+# Display overall hourly deaths
+hod_all <- subset(count(deaths, "hod"), !is.na(hod))
+qplot(hod, freq, data = hod_all, geom = "line") + 
+  scale_y_continuous("Number of deaths", labels = function(x) format(x, big.mark = ",")) + 
+  xlab("Hour of day")
+ggsave("overall.pdf", width = 10, height = 6)
+
 # Count deaths per hour, per disease
 hod2 <- count(deaths, c("cod", "hod"))
 hod2 <- subset(hod2, !is.na(hod))
