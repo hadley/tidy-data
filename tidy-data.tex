@@ -475,7 +475,7 @@ hod2 <- join(hod2, overall, by = "hod")
   \label{tbl:counts}
 \end{table}
 
-Next we compute a distance between the temporal course of each cause of death and the overall temporal course. Here we use a simple mean squared deviation between the proportion of people who died from a particular cause and all causes, for each hour. We also record the sample size, the total number of deaths from that cause. To ensure that the diseases we consider are sufficiently representative we'll only work with diseases with more than 50 total deaths ($\sim$2/hour).
+Next we compute a distance between the temporal pattern of each cause of death and the overall temporal pattern. There are many ways to measure this distance, but I found a simple mean squared deviation to be revealing. We also record the sample size, the total number of deaths from that cause. To ensure that the diseases we consider are sufficiently representative we'll only work with diseases with more than 50 total deaths ($\sim$2/hour).
 
 \begin{Verbatim}
 devi <- ddply(hod2, "cod", summarise, 
