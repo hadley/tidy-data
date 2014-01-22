@@ -129,7 +129,7 @@ Table~\ref{tbl:preg-tidy} is the tidy version of Table~\ref{tbl:preg-raw-1}. Eac
 
 Tidy data makes it easy for an analyst or a computer to extract needed variables because it provides a standard way of structuring a dataset. Compare Table~\ref{tbl:preg-tidy} to Table~\ref{tbl:preg-raw-1}: in Table~\ref{tbl:preg-raw-1} you need to use different strategies to extract different variables. This slows analysis and invites errors. If you consider how many data analysis operations involve all of the values in a variable (every aggregation function), you can see how important it is to extract these values in a simple, standard way. Tidy data is particularly well suited for vectorised programming languages like \proglang{R}, because the layout ensures that values of different variables from the same observation are always paired.
 
-While order of variables and observations does not affect analysis, a good ordering makes it easier to scan the raw values. One way of organising variables is by their role in the analysis: are values fixed by the design of the data collection, or are they measured during the course of the experiment? Fixed variables describe the experimental design and are known in advance. Computer scientists often call fixed variables dimensions, and statisticians usually denote them with subscripts on random variables. Measured variables are what we actually measure in the study. Fixed variables should come first, followed by measured variables, each ordered so that related variables are contiguous. Rows can then be ordered by the first variable, breaking ties with the second and subsequent (fixed) variables. This is the convention adopted by all tabular displays in this paper. 
+While the order of variables and observations does not affect analysis, a good ordering makes it easier to scan the raw values. One way of organising variables is by their role in the analysis: are values fixed by the design of the data collection, or are they measured during the course of the experiment? Fixed variables describe the experimental design and are known in advance. Computer scientists often call fixed variables dimensions, and statisticians usually denote them with subscripts on random variables. Measured variables are what we actually measure in the study. Fixed variables should come first, followed by measured variables, each ordered so that related variables are contiguous. Rows can then be ordered by the first variable, breaking ties with the second and subsequent (fixed) variables. This is the convention adopted by all tabular displays in this paper. 
 
 \section{Tidying messy datasets}
 \label{sec:tidying}
@@ -155,11 +155,11 @@ Table~\ref{tbl:pew-raw} shows a subset of a typical dataset of this form. This d
 \begin{table}[htbp]
   \centering
   \input{data/pew-raw.tex}
-  \caption{The first ten rows of data on income and religion from the Pew Forum. Two columns, \code{\$100-150k} and \code{\$150k}, have been omitted} 
+  \caption{The first ten rows of data on income and religion from the Pew Forum. Two columns, \code{\$100-150k} and \code{>150k}, have been omitted} 
   \label{tbl:pew-raw}
 \end{table}
 
-This dataset has three variables, \code{religion}, \code{income} and \code{frequency}. To tidy it, we need to \textbf{melt}, or stack it. In other words, we need to turn columns into rows. While this is often described as making wide datasets long or tall, I will avoid those terms because they are imprecise. Melting is parameterised by a list of columns that are already variables, or \textbf{colvar}s for short. The other columns are converted into two variables: a new variable called \code{column} that contains repeated column headings and a new variable called \code{value} that contains a vector of data values concatenated from the previously separate columns. This is illustrated in Table~\ref{tbl:melt} with a toy dataset. The result of melting is a \textbf{molten} dataset.
+This dataset has three variables, \code{religion}, \code{income} and \code{frequency}. To tidy it, we need to \textbf{melt}, or stack it. In other words, we need to turn columns into rows. While this is often described as making wide datasets long or tall, I will avoid those terms because they are imprecise. Melting is parameterised by a list of columns that are already variables, or \textbf{colvar}s for short. The other columns are converted into two variables: a new variable called \code{column} that contains repeated column headings and a new variable called \code{value} that contains the concatenated data values from the previously separate columns. This is illustrated in Table~\ref{tbl:melt} with a toy dataset. The result of melting is a \textbf{molten} dataset.
 
 \begin{table}
   \centering
@@ -211,7 +211,7 @@ After melting, the \code{column} variable names often becomes a combination of m
 
 Column headers in this format are often separated by some character (\code{.}, \code{-}, \code{\_}, \code{:}). While the string can be broken into pieces using that character as a divider, in other cases, such as for this dataset, more careful string processing is required. For example, the variable names can be matched to a lookup table that converts single compound value into multiple component values. 
 
-Table~\subref*{tbl:tb-molten} shows the results of melting the TB dataset, and Table~\subref*{tbl:tb-tidy} shows the results of splitting the column \code{column} into two real variables: \code{age} and \code{sex}.  
+Table~\subref*{tbl:tb-molten} shows the results of melting the TB dataset, and Table~\subref*{tbl:tb-tidy} shows the results of splitting the single column \code{column} into two real variables: \code{age} and \code{sex}.  
 
 \begin{table}[htbp]
   \centering
@@ -331,7 +331,7 @@ All these operations are made easier when there is a consistent way to refer to 
 
 In \proglang{R}, filtering and transforming are performed by the base \proglang{R} functions \code{subset()} and \code{transform()}. These are input and output-tidy. The \code{aggregate()} function performs group-wise aggregation. It is input-tidy. Provided that a single aggregation method is used, it is also output-tidy . The \pkg{plyr} package provides tidy \code{summarise()} and \code{arrange()} functions for aggregation and sorting.
 
-The four verbs can be, and often are, modified by the ``by'' preposition. We often need group-wise aggregates, transformations and subsets, to pick the biggest in each group, to average over replicates and so on. Combining each of the four verbs with a by operator allows them to operate on subsets of a data frame at a time. Many \proglang{SAS} {\sc proc}s possess a {\sc by} statement which allows the operation to be performed by group, and are generally input-tidy. Base \proglang{R} possesses a \code{by()} function, which is input-tidy, but not output-tidy, because it produces a list. The \code{ddply()} function from the \pkg{plyr} package is a tidy alternative.
+The four verbs can be, and often are, modified by the ``by'' preposition. We often need group-wise aggregates, transformations and subsets, to pick the biggest in each group, to average over replicates and so on. Combining each of the four verbs with a by operator allows them to operate on subsets of a data frame at a time. Most \proglang{SAS} {\sc proc}s possess a {\sc by} statement which allows the operation to be performed by group, and are generally input-tidy. Base \proglang{R} possesses a \code{by()} function, which is input-tidy, but not output-tidy, because it produces a list. The \code{ddply()} function from the \pkg{plyr} package is a tidy alternative.
 
 % Some aggregations occur so frequently they deserve their own optimised implementations. One such operation is (weighted) counting. Base R provides the {\tt table} function for this, but it is not output-tidy: it returns a multidimensional array. An tidy alternative is the {\tt count} function from {\tt plyr}, which returns a tidy dataset with a column for each of the input variables plus a new variable {\tt freq}, which records the number of records in each category.
 
@@ -346,17 +346,17 @@ Most graphical tools in \proglang{R} are input-tidy, including the \pkg{base} \c
 \subsection{Modelling}
 \label{sub:modelling}
 
-Modelling is the driving inspiration of this work because most modelling tools work best with tidy datasets. Every statistical language has a way of describing a model as a connection between different variables, a domain specific language that connects responses to predictors: 
+Modelling is the driving inspiration of this work because most modelling tools work best with tidy datasets. Every statistical language has a way of describing a model as a connection among different variables, a domain specific language that connects responses to predictors: 
 
 \begin{itemize}
 
   \item \proglang{R} (\code{lm()}): \code{y ~ a + b + c * d}
 
-  \item \proglang{SAS} (\code{PROC GLM}): \code{y = a + b + c * d}
+  \item \proglang{SAS} (\code{PROC GLM}): \code{y = a + b + c + d + c * d}
 
   \item \proglang{SPSS} (\code{glm}): \code{y BY a b c d / DESIGN a b c d c * d}
 
-  \item \proglang{Stata} (\code{regress}): \code{y a b c \# d}
+  \item \proglang{Stata} (\code{regress}): \code{y a b c\#d}
 
 
 \end{itemize}
@@ -365,7 +365,7 @@ This is not to say that tidy data is the format used internally to compute the r
 
 % http://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_glm_sect022.htm
 
-There have been some attempts to adapt modelling functions for specific types of messy datasets. For example, in \proglang{SAS}'s \code{proc glm}, multiple variables on the response side of the equation will be interpreted as repeated measures if the {\sc repeated} keyword is present. For the raw Billboard data, we could construct a model of the form \code{wk1-wk76 = track} instead of \code{rank = week * track} on the tidy data (provided week is labelled as a categorical variable). 
+There have been some attempts to adapt modelling functions for specific types of messy datasets. For example, in \proglang{SAS}'s \code{proc glm}, multiple variables on the response side of the equation will be interpreted as repeated measures if the {\sc repeated} keyword is present. For the raw Billboard data, we could construct a model of the form \code{wk1-wk76 = track} instead of \code{rank = week * track} on the tidy data. 
 
 Another interesting example is the classic paired t-test, which can be computed in two ways depending on how the data is stored. If the data is stored as in Table~\subref*{tbl:paired}, then a paired t-test is just a t-test applied to the mean difference between x and y. If it is stored in the form of Table~\subref*{tbl:mixed}, then an equivalent result can be produced by fitting a mixed effects model, with a fixed dummy variable representing the \code{variable}, and a random intercept for each id. (In \proglang{R}'s lmer4 notation, this is expressed as \code{value ~ variable + (1 | id)}). Either way of modelling the data yields the same result. Without more information we can't say which form of the data is tidy: if x and y represent length of left and right arms, then Table~\subref*{tbl:paired} is tidy, if x and y represent measurements on day 1 and day 10, then Table~\subref*{tbl:mixed} is tidy.
 
@@ -401,7 +401,7 @@ The case study uses individual-level mortality data from Mexico. The goal is to 
   \label{fig:overall}
 \end{figure}
 
-The full dataset has information on 539,530 deaths in Mexico in 2008 and 55 variables, including the the location and time of death, the cause of death, and demographics of the deceased. Table~\ref{fig:raw} shows a small sample of the dataset, focussing on variables related to time of death (\code{year}, \code{month}, \code{day} and \code{hour}), and cause (\code{cod}).
+The full dataset has information on 539,530 deaths in Mexico in 2008 and 55 variables, including the the location and time of death, the cause of death, and demographics of the deceased. Table~\ref{fig:raw} shows a small sample of the dataset, focussing on variables related to time of death (\code{year}, \code{month}, \code{day} and \code{hour}), and cause of death (\code{cod}).
 
 \begin{table}
   \centering
@@ -430,7 +430,7 @@ hod2 <- join(hod2, codes, by = "cod")
 
 The total deaths for each cause varies over several orders of magnitude: there are 46,794 deaths from heart attack but only 10 from avalanche. This means that rather than the total number, it makes more sense to compare the proportion of deaths in each hour. We compute this by breaking the dataset down by \code{cod}, and then \code{transform()}ing to add a new \code{prop} column, the hourly frequency divided by the total number of deaths from that cause. This new column is Table~\subref*{tbl:counts:3}.
 
-\code{ddply()} breaks down the first argument (\code{hod2}) by its second (the \code{cod} variable), and then applies the third argument (\code{transform}) to each resulting piece. The fourth argument (\code{prop = freq / sum(freq)}) is then passed on to transform.
+\code{ddply()} breaks down the first argument (\code{hod2}) by its second (the \code{cod} variable), and then applies the third argument (\code{transform}) to each resulting piece. The fourth argument (\code{prop = freq / sum(freq)}) is then passed on to \code{transform()}.
 
 \begin{Verbatim}
 hod2 <- ddply(hod2, "cod", transform, prop = freq / sum(freq))
@@ -475,7 +475,7 @@ hod2 <- join(hod2, overall, by = "hod")
   \label{tbl:counts}
 \end{table}
 
-Next we compute a distance between the temporal course of each cause of death and the overall temporal course. Here we use the simple mean squared deviation.  We also record the sample size, the total number of deaths from that cause. To ensure that the diseases we consider are sufficiently representative we'll only work with diseases with more than 50 total deaths ($\sim$2/hour).
+Next we compute a distance between the temporal course of each cause of death and the overall temporal course. Here we use a simple mean squared deviation between the proportion of people who died from a particular cause and all causes, for each hour. We also record the sample size, the total number of deaths from that cause. To ensure that the diseases we consider are sufficiently representative we'll only work with diseases with more than 50 total deaths ($\sim$2/hour).
 
 \begin{Verbatim}
 devi <- ddply(hod2, "cod", summarise, 
