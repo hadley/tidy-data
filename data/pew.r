@@ -43,4 +43,4 @@ xtable(counts[1:10, ], file = "pew-clean.tex")
 # Convert into the form in which I originally saw it -------------------------
 
 raw <- dcast(counts, religion ~ income)
-xtable(raw[1:10, 1:8], file = "pew-raw.tex")
+xtable(raw[1:10, 1:7], file = "pew-raw.tex")

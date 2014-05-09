@@ -92,15 +92,15 @@ Table~\ref{tbl:preg-tidy} reorganises Table~\ref{tbl:preg-raw-1} to make the val
 
 \begin{enumerate}
 
-\item \code{person}, with three possible values (John, Mary, and Jane),
+\item \code{person}, with three possible values (John, Mary, and Jane).
 
-\item \code{treatment}, with two possible values (a and b), and 
+\item \code{treatment}, with two possible values (a and b).
 
 \item \code{result}, with five or six values depending on how you think of the missing value (-, 16, 3, 2, 11, 1).
 
 \end{enumerate}
 
-The experimental design tells us more about the structure of the observations. In this experiment, every combination of of \code{person} and \code{treatment} was measured, a completely crossed design. The experimental design also determines whether or not missing values can be safely dropped. In this experiment, the missing value represents an observation that should have been made, but wasn't, so it's important to keep it. Structural missing values, which represent measurements that can't be made (e.g. the count of pregnant males) can be safely removed.
+The experimental design tells us more about the structure of the observations. In this experiment, every combination of of \code{person} and \code{treatment} was measured, a completely crossed design. The experimental design also determines whether or not missing values can be safely dropped. In this experiment, the missing value represents an observation that should have been made, but wasn't, so it's important to keep it. Structural missing values, which represent measurements that can't be made (e.g., the count of pregnant males) can be safely removed.
 
 \begin{table}[htbp]
   \centering
@@ -137,11 +137,11 @@ While the order of variables and observations does not affect analysis, a good o
 Real datasets can, and often do, violate the three precepts of tidy data in almost every way imaginable. While occasionally you do get a dataset that you can start analysing immediately, this is the exception, not the rule. This section describes the five most common problems with messy datasets, along with their remedies:
 
 \begin{itemize}
-  \item column headers are values, not variable names
-  \item multiple variables are stored in one column
-  \item variables are stored in both rows and columns
-  \item multiple types of observational units are stored in the same table
-  \item a single observational unit is stored in multiple tables
+  \item Column headers are values, not variable names.
+  \item Multiple variables are stored in one column.
+  \item Variables are stored in both rows and columns.
+  \item Multiple types of observational units are stored in the same table.
+  \item A single observational unit is stored in multiple tables.
 \end{itemize}
 
 Surprisingly, most messy datasets, including types of messiness not explicitly described above, can be tidied with a small set of tools: melting, string splitting, and casting. The following sections illustrate each problem with a real dataset that I have encountered, and show how to tidy them. The complete datasets and the \proglang{R} code used to tidy them are available online at \url{https://github.com/hadley/tidy-data}, and in the online supplementary materials for this paper.
@@ -155,7 +155,7 @@ Table~\ref{tbl:pew-raw} shows a subset of a typical dataset of this form. This d
 \begin{table}[htbp]
   \centering
   \input{data/pew-raw.tex}
-  \caption{The first ten rows of data on income and religion from the Pew Forum. Two columns, \code{\$100-150k} and \code{>150k}, have been omitted} 
+  \caption{The first ten rows of data on income and religion from the Pew Forum. Three columns, \code{\$75-100k}, \code{\$100-150k} and \code{>150k}, have been omitted} 
   \label{tbl:pew-raw}
 \end{table}
 
@@ -236,7 +236,7 @@ This dataset is mostly tidy, but we have two variables stored in rows: \code{tmi
 \begin{table}[htbp]
   \centering
   \input{data/weather-raw.tex}
-  \caption{Original weather dataset.  There is a column for each possible day in the month.  Columns \code{d11} to \code{d31} have been omitted to conserve space.}
+  \caption{Original weather dataset.  There is a column for each possible day in the month.  Columns \code{d9} to \code{d31} have been omitted to conserve space.}
   \label{tbl:weather-raw}
 \end{table}
 
@@ -350,13 +350,13 @@ Modelling is the driving inspiration of this work because most modelling tools w
 
 \begin{itemize}
 
-  \item \proglang{R} (\code{lm()}): \code{y ~ a + b + c * d}
+  \item \proglang{R} (\code{lm()}): \code{y ~ a + b + c * d}.
 
-  \item \proglang{SAS} (\code{PROC GLM}): \code{y = a + b + c + d + c * d}
+  \item \proglang{SAS} (\code{PROC GLM}): \code{y = a + b + c + d + c * d}.
 
-  \item \proglang{SPSS} (\code{glm}): \code{y BY a b c d / DESIGN a b c d c * d}
+  \item \proglang{SPSS} (\code{glm}): \code{y BY a b c d / DESIGN a b c d c * d}.
 
-  \item \proglang{Stata} (\code{regress}): \code{y a b c\#d}
+  \item \proglang{Stata} (\code{regress}): \code{y a b c\#d}.
 
 
 \end{itemize}

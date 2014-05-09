@@ -14,6 +14,10 @@ raw$track <- str_replace(raw$track, " \\(.*?\\)", "")
 names(raw)[-(1:5)] <- str_c("wk", 1:76)
 raw <- arrange(raw, year, artist, track)
 
+long_name <- nchar(raw$track) > 20
+raw$track[long_name] <- paste0(substr(raw$track[long_name], 0, 20), "...")
+
+
 xtable(raw[c(1:3, 6:10), 1:8], "billboard-raw.tex")
 
 clean <- melt(raw, id = 1:5, na.rm = T)
@@ -37,8 +41,6 @@ song <- unrowname(unique(clean[c("artist", "track", "time")]))
 song$id <- 1:nrow(song)
 
 narrow <- song[1:15, c("id","artist", "track", "time")]
-long_name <- nchar(narrow$track) > 20
-narrow$track[long_name] <- paste0(substr(narrow$track[long_name], 0, 20), "...")
 xtable(narrow, "billboard-song.tex")
 
 rank <- join(clean, song, match = "first")

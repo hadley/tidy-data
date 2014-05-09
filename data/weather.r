@@ -31,7 +31,7 @@ raw[-(1:4)] <- raw[-(1:4)] / 10
 rownames(raw) <- NULL
 raw$element <- tolower(raw$element)
 
-xtable(raw[1:10, 1:14], file = "weather-raw.tex", digits = 1)
+xtable(raw[1:10, 1:12], file = "weather-raw.tex", digits = 1)
 
 # Melt and tidy
 
