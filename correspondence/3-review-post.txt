@@ -1,0 +1,31 @@
+JSS 1090: Wickham
+
+Tidy Data
+
+For further instruction on JSS style requirements please see the JSS style manual(in particular section 2.1 Style Checklist) at http://www.jstatsoft.org/downloads/JSSstyle.zip
+Also see FAQ at: http://www.jstatsoft.org/style
+For further references please see RECENT JSS papers for detailed documentation and examples. 
+
+Manuscript:
+o As a reminder, please make sure that:
+  - \proglang, \pkg and \code have been used for highlighting throughout
+the paper (including titles and references), except where explicitly escaped.
+
+o All table row/column headers should be in sentence style (i.e. first letter capitalized). 
+
+o For bullet lists/itemized lists please use either a comma, semi-colon, or period at the end of each time (e.g., see p. 3 item 2 and p. 5).
+
+o Tables should fit in the normal text width of the manuscript, e.g. see p. 6, 8, 11.
+
+o If using "e.g." and "i.e." add a comma after the period (see top of p. 4).
+
+
+References:
+o Springer-Verlag (not: Springer)
+o Please make sure that all software packages are \cite{}'d properly. 
+o All references should be in title style.
+o See FAQ for specific reference instructions.
+
+
+Code:
+As a reminder, please make sure that all files needed to replicate the code/examples within the manuscript are included in a standalone replication script.
