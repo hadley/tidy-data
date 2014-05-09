@@ -1,6 +1,8 @@
 > \proglang, \pkg and \code have been used for highlighting throughout
 > the paper (including titles and references), except where explicitly escaped.
 
+Done.
+
 > All table row/column headers should be in sentence style 
 > (i.e. first letter capitalized). 
 
@@ -22,6 +24,17 @@ Fixed.
 
 > References:
 > o Springer-Verlag (not: Springer)
+
+Done
+
 > o Please make sure that all software packages are \cite{}'d properly. 
+
+Done
+
 > o All references should be in title style.
+
+Done
+
 > o See FAQ for specific reference instructions.
+
+Done.
