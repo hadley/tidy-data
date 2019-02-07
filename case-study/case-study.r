@@ -24,8 +24,8 @@ if (!file.exists("deaths.rds")) {
 
 deaths <- readRDS("deaths.rds")
 
-ok <- subset(deaths, yod == 2008 & mod != 0 & dod != 0)
-xtable(ok[c(1, 1:14 * 2000), c("yod", "mod", "dod", "hod", "cod")], 
+deaths <- subset(deaths, yod == 2008 & mod != 0 & dod != 0)
+xtable(deaths[c(1, 1:14 * 2000), c("yod", "mod", "dod", "hod", "cod")], 
   "raw.tex")
 
 codes <- read.csv("icd-main.csv")
